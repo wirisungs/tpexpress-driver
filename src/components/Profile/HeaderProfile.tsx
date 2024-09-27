@@ -14,10 +14,10 @@ const HeaderBlank: React.FC<HeaderBlankProps> = ({ title }) => {
   return (
     <StyledView>
       <View
-        className="pt-16 pb-6 px-6 z-50 flex justify-between items-center rounded-b-2xl"
-        style={{ backgroundColor: '#EB455F' }}
+      className="pt-16 pb-6 px-6 z-50 flex justify-between items-center rounded-b-2xl shadow-lg"
+      style={{ backgroundColor: '#EB455F' }}
       >
-        <StyledText className="text-white text-center text-2xl font-bold">{title}</StyledText>
+      <StyledText className="text-white text-center text-2xl font-bold">{title}</StyledText>
       </View>
     </StyledView>
   );
