@@ -1,17 +1,17 @@
 import { View, Text } from 'react-native'
 import React from 'react'
-import HeaderProfile from '../components/HeaderProfile'
+import HeaderProfile from '../components/Profile/HeaderProfile'
+import MyComponent from '../components/Profile/MyComponent'
+import { ScrollView } from 'react-native-gesture-handler'
 
 const ProfileScreen = () => {
   return (
 
     <View>
-      <View>
-        <HeaderProfile title="rat la test"/>
-      </View>
-      <View>
-        <Text>Profile Screen</Text>
-      </View>
+      <HeaderProfile title="Profile"/>
+      <ScrollView>
+        <MyComponent/>
+      </ScrollView>
     </View>
   )
 }
