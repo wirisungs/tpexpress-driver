@@ -1,20 +1,22 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+//Desc: Entry point of the app
+import React from 'react';
+import AuthStack from './src/navigation/AuthStack';
+import RouteManager from './src/routes/RouteManager';
 
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
-}
+const App = () => {
+  return <RouteManager />;
+};
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default App;
+
+// import { View, Text } from 'react-native'
+// import React from 'react'
+// import OrderCard from './src/components/OrderCard/OrderCard'
+
+// const App = () => {
+//   return (
+//     <View>
+//       <OrderCard/>
+//     </View>
+//   )
+// }
