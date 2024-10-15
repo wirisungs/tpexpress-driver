@@ -5,12 +5,14 @@ import AcceptOrderCard from '../components/OrderCard/AcceptOrderCard'
 
 const OrderScreen = () => {
   return (
-    <ScrollView>
+    <View>
       <View className="items-center my-5">
-        <Text className="font-bold text-2xl">Đơn hàng đã nhận</Text>
+          <Text className="font-bold text-2xl">Đơn hàng đã nhận</Text>
       </View>
-      <AcceptOrderCard/>
-    </ScrollView>
+      <ScrollView>
+        <AcceptOrderCard/>
+      </ScrollView>
+    </View>
   )
 }
 

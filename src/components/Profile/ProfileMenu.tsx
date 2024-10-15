@@ -20,7 +20,7 @@ import Settings from "../../svg/Settings"
 
 const accountItems: SectionItemProps[] = [
   {
-    imageUri: <Profile />,
+    imageUri: <Profile/>,
     text: "Thông tin cá nhân & Bảo mật",
   },
   {

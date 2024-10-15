@@ -10,6 +10,26 @@ const NotificationScreen = () => {
         date="10/03/2024"
         message="Đơn hàng J9DNJWA32OD của bạn đã được giao thành công"
       />
+      <Noti
+        orderNumber="J9DNJWA320D"
+        date="10/03/2024"
+        message="Đơn hàng J9DNJWA32OD của bạn đã được giao thành công"
+      />
+      <Noti
+        orderNumber="J9DNJWA320D"
+        date="10/03/2024"
+        message="Đơn hàng J9DNJWA32OD của bạn đã được giao thành công"
+      />
+      <Noti
+        orderNumber="J9DNJWA320D"
+        date="10/03/2024"
+        message="Đơn hàng J9DNJWA32OD của bạn đã được giao thành công"
+      />
+      <Noti
+        orderNumber="J9DNJWA320D"
+        date="10/03/2024"
+        message="Đơn hàng J9DNJWA32OD của bạn đã được giao thành công"
+      />
     </ScrollView>
   )
 }

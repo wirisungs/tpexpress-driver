@@ -31,7 +31,7 @@ const ConfirmationScreen: React.FC<ConfirmationScreenProps> = ({
             <Text className="text-center font-bold text-base">Ảnh xác nhận đơn</Text>
           </View>
           <ImageUploader />
-            <View className="flex flex-row justify-center mt-5 max-w-full text-xl font-semibold text-center rounded-none w-[260px] space-x-4">
+            <View className="inline-flex flex-row justify-center mt-5 max-w-full text-xl font-semibold text-center rounded-none w-[260px] space-x-4" role="group">
             <ConfirmationButton onPress={onCancel} variant="outline">
               Trở về
             </ConfirmationButton>

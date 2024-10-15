@@ -1,21 +1,21 @@
 import React, { useState } from 'react';
-import { SafeAreaView, View, Text, TouchableOpacity } from 'react-native';
+import { SafeAreaView, View, Text, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import Logo from "../../svg/Logo";
 import InputField from "../../components/InputField";
-import Button from '../../components/Button/Button';
 import FingerprintButton from '../../components/Button/FingerprintButton';
 import PasswordChange from '../../svg/PasswordChange';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { RootStackParamList } from '../../types/types';
+const TPExpress = require('../../assets/TPExpress.png');
+// Adjust this import
 
-
-
-interface Props {
-  navigation: NavigationProp<any>;
-}
+type LoginScreenNavigationProp = NavigationProp<RootStackParamList, 'Auth'>;
 
 const LoginScreen = () => {
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const navigation = useNavigation();
+  const [phone, setPhone] = useState('');
+  const [password, setPassword] = useState('');
+  const navigation = useNavigation<LoginScreenNavigationProp>();
 
   const handlePassLogin = () => {
     navigation.navigate('PassLogScreen' as never);
@@ -23,14 +23,44 @@ const LoginScreen = () => {
 
   const handleRegister = () => {
     navigation.navigate('RegisterScreen' as never);
-  }
+  };
+
+  const handleLogin = async () => {
+    const userData = {
+      phone,
+      password,
+    };
+
+    try {
+      const response = await fetch('http://10.0.2.2:3000/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userData),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        // Login successful, store the token
+        await AsyncStorage.setItem('userToken', data.token);
+
+        // Navigate to OrderScreen within HomeNavigator
+        navigation.navigate('Home' as never);
+        console.log('Login successful');
+      } else {
+        Alert.alert('Error', data.message);
+      }
+    } catch (error) {
+      Alert.alert('Error', 'An error occurred during login.');
+    }
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-white justify-center items-center">
       <View className="flex-1 justify-center items-center">
         {/* Logo Placeholder */}
         <View className="mb-8">
-          <Text className="text-5xl font-bold text-pink-500">LOGO</Text>
+          {/* <Text className="text-5xl font-bold text-pink-500">LOGO</Text> */}
+          <img src={TPExpress} alt="logo" />
         </View>
 
         {/* App Name */}
@@ -38,13 +68,19 @@ const LoginScreen = () => {
         <Text className="text-base text-gray-500 mb-6">Giao hàng bằng cả tính mạng</Text>
 
         {/* Phone Number Input */}
-        <View className="flex p-3 justify-center items-center gap-0 self-stretch w-[318px]">
-          <InputField />
+        <View className="flex p-3 justify-center items-center w-[318px]">
+          <InputField placeholder='Số điện thoại' value={phone} onChange={setPhone} />
+          <InputField placeholder='Mật khẩu' value={password} onChange={setPassword} />
         </View>
 
         {/* Login Button */}
         <View className="flex-row">
-          <Button placeholder="Đăng nhập"/>
+          <TouchableOpacity
+            onPress={handleLogin}
+            className="flex h-[50px] py-[6px] px-[24px] justify-center items-center gap-[0px] flex-[1_0_0] bg-[#EB455F] w-[236px] rounded-xl mt-4"
+          >
+            <Text className="text-white text-lg font-bold">Đăng nhập</Text>
+          </TouchableOpacity>
           <FingerprintButton />
         </View>
 
@@ -55,7 +91,7 @@ const LoginScreen = () => {
         </TouchableOpacity>
 
         <TouchableOpacity className="mt-4 flex-col justify-center items-center" onPress={handleRegister}>
-          <Text className="tẽt-sm text-gray-500">Chưa có tài khoản? Đăng ký ngay</Text>
+          <Text className="text-sm text-gray-500">Chưa có tài khoản? Đăng ký ngay</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

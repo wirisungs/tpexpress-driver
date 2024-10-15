@@ -1,17 +1,18 @@
-import { View, Text, TouchableOpacity } from 'react-native'
-import React from 'react'
+import { View, Text, TouchableOpacity } from 'react-native';
+import React from 'react';
+import { useNavigation, NavigationProp } from '@react-navigation/native';
 
+// Define the types for the navigation and button props
 interface ButtonProps {
   placeholder: string;
+  screenName: string;
 }
 
-import { useNavigation } from '@react-navigation/native';
-
-const Button: React.FC<ButtonProps> = ({ placeholder }) => {
-  const navigation = useNavigation();
+const Button: React.FC<ButtonProps> = ({ placeholder, screenName }) => {
+  const navigation = useNavigation<NavigationProp<any>>(); // Use a typed navigation prop
 
   const handlePress = () => {
-    navigation.navigate('HomeScreen' as never);
+    navigation.navigate(screenName as never); // Ensuring the screen name is passed correctly
   };
 
   return (
@@ -26,4 +27,4 @@ const Button: React.FC<ButtonProps> = ({ placeholder }) => {
   );
 };
 
-export default Button
+export default Button;import { FC } from 'react';
