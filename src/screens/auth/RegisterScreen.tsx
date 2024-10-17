@@ -61,7 +61,7 @@ const RegisterScreen = () => {
         <Text className="text-2xl font-bold text-black">THIEN PHUC DRIVER</Text>
         <Text className="text-base text-gray-500 mb-6">Giao hàng bằng cả tính mạng</Text>
 
-        <View className="flex p-3 justify-center items-center gap-0 self-stretch w-[318px]">
+        <View className="flex p-3 justify-center items-center w-[318px]">
           <InputField placeholder="Họ và tên" value={name} onChange={setName} />
           <InputField placeholder="Số điện thoại" value={phone} onChange={setPhone} />
           <InputField placeholder="Phương tiện sử dụng" value={vehicle} onChange={setVehicle} />
@@ -72,7 +72,7 @@ const RegisterScreen = () => {
         <View className="flex-row">
           <TouchableOpacity
             onPress={handleRegister}
-            className="flex h-[50px] py-[6px] px-[24px] justify-center items-center gap-[0px] flex-[1_0_0] bg-[#EB455F] w-[236px] rounded-xl mt-4"
+            className="flex h-[50px] py-[6px] px-[24px] justify-center items-center bg-[#EB455F] w-[294px] rounded-xl mt-4"
           >
             <Text className="text-white text-lg font-bold">Đăng ký</Text>
           </TouchableOpacity>

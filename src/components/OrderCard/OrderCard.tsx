@@ -23,7 +23,7 @@ const StyledText = styled(Text);
 const StyledTouchableOpacity = styled(TouchableOpacity);
 
 const OrderCard: React.FC<OrderCardProps> = ({ order, onAcceptOrder }) => (
-  <StyledView className="bg-white rounded-lg p-4 my-2 mx-3 shadow">
+  <StyledView className="bg-white rounded-lg p-4 my-2 mx-3 shadow-xl">
     <StyledText className="font-bold text-xl mb-2">{order.orderId}</StyledText>
     <Divider />
     <StyledText className="text-lg mb-1 mt-1">Người nhận: {order.customerId}</StyledText>

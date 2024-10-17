@@ -4,7 +4,7 @@ import Fingerprint from "../../svg/Fingerprint"
 
 const FingerprintButton = () => {
   return (
-    <TouchableOpacity className="flex justify-center items-center w-12 h-12 p-1.5 px-2.5 mt-4 rounded-xl border-2 border-rose-500 border-solid">
+    <TouchableOpacity className="flex ml-2 justify-center items-center w-12 h-12 p-1.5 px-2.5 mt-4 rounded-xl border-2 border-rose-500 border-solid">
       <Fingerprint/>
     </TouchableOpacity>
   )

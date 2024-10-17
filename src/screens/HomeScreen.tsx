@@ -1,6 +1,7 @@
-import { View, Text, Switch, ScrollView } from 'react-native';
+import { View, Text, Switch, ScrollView, Image } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import OrderCard from '../components/OrderCard/OrderCard';
+import ActivityState from '../assets/ActivityState.png'; // Ensure this path is correct
 
 interface Order {
   orderId: string;
@@ -33,8 +34,8 @@ const HomeScreen = () => {
 
   return (
     <View className="flex-1 p-4 bg-white">
-      <View className="flex-row mb-4">
-        <Text className="text-base">Trạng thái hoạt động</Text>
+      <View className="flex-col mb-4 items-start">
+        <Text className="text-base font-bold mr-2">Trạng thái hoạt động</Text>
         <Switch
           trackColor={{ false: "#767577", true: "#81b0ff" }}
           thumbColor={isWorking ? "#f5dd4b" : "#f4f3f4"}
@@ -42,17 +43,24 @@ const HomeScreen = () => {
           onValueChange={() => setIsWorking((prev) => !prev)}
           value={isWorking}
         />
-        <Text>
+        <Text className="text-sm" style={{ color: isWorking ? 'green' : 'red' }}>
           {isWorking ? "Đang hoạt động" : "Không hoạt động"}
         </Text>
       </View>
       <ScrollView className="flex-1">
-        {orders.length > 0 ? (
-          orders.map((order) => (
-            <OrderCard key={order.orderId} order={order} onAcceptOrder={(id) => console.log(`Order accepted: ${id}`)} />
-          ))
+        {isWorking ? (
+          orders.length > 0 ? (
+            orders.map((order) => (
+              <OrderCard key={order.orderId} order={order} onAcceptOrder={(id) => console.log(`Order accepted: ${id}`)} />
+            ))
+          ) : (
+            <Text>No orders available</Text>
+          )
         ) : (
-          <Text>No orders available</Text>
+          <View className="flex-col items-center">
+            <Text className="text-center p-7 text-xl">Chuyển đổi trạng thái hoạt động để xem đơn hàng</Text>
+            <Image source={ActivityState} style={{ width: 300, height: 300 }} />
+          </View>
         )}
       </ScrollView>
     </View>

@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, Modal } from "react-native";
-import ConfirmationButton from "../Button/ConfirmationButton";
+import ModalButton from "../Button/ModalButton";
 import ImageUploader from "../ImageUploader/ImageUploader";
 import BeautifulBox from "../../svg/BeautifulBox";
 
@@ -32,12 +32,12 @@ const ConfirmationScreen: React.FC<ConfirmationScreenProps> = ({
           </View>
           <ImageUploader />
             <View className="inline-flex flex-row justify-center mt-5 max-w-full text-xl font-semibold text-center rounded-none w-[260px] space-x-4" role="group">
-            <ConfirmationButton onPress={onCancel} variant="outline">
+            <ModalButton onPress={onCancel} variant="outline">
               Trở về
-            </ConfirmationButton>
-            <ConfirmationButton onPress={onConfirm} variant="solid">
+            </ModalButton>
+            <ModalButton onPress={onConfirm} variant="solid">
               Xác nhận
-            </ConfirmationButton>
+            </ModalButton>
             </View>
         </View>
       </View>
