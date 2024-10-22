@@ -14,6 +14,11 @@ export type AuthNavigatorParamList = {
   VerifyScreen: undefined;
 };
 
+export type OrderNavigatorParamList = {
+  OrderScreen: undefined;
+  OrderDetailScreen: undefined;
+};
+
 export type RootStackParamList = {
   Home: NavigatorScreenParams<HomeNavigatorParamList>;
   Auth: NavigatorScreenParams<AuthNavigatorParamList>;

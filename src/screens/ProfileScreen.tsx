@@ -28,11 +28,10 @@ const UserProfile = () => {
   const fetchUserProfile = async () => {
     try {
       const token = await AsyncStorage.getItem('userToken'); // Get token from storage
-
       if (!token) {
         throw new Error('No token found');
       }
-
+      console.log('Token:', token); // Debugging log
       const response = await fetch('http://10.0.2.2:3000/user/profile/', {
         method: 'GET',
         headers: {
@@ -40,11 +39,10 @@ const UserProfile = () => {
           'Content-Type': 'application/json',
         },
       });
-
+      console.log('Response status:', response.status); // Debugging log
       if (!response.ok) {
         throw new Error('Failed to fetch user profile');
       }
-
       const userProfile = await response.json();
       setUser(userProfile); // Set the fetched user profile data
       console.log('User profile fetched successfully', userProfile);
@@ -75,7 +73,7 @@ const UserProfile = () => {
 
       <View className="items-center mt-8">
         <Image
-          source={{ uri: 'http://10.0.2.2:3000/assets/z5904438362766_91a95aa04deb0a81c882531ca5ad32df.jpg' }}
+          source={{ uri: '../assets/z5904438362766_91a95aa04deb0a81c882531ca5ad32df.jpg' }}
           className="w-40 h-40 rounded-full"
         />
       </View>

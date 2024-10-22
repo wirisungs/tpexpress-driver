@@ -1,124 +1,101 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, Image, TouchableOpacity, ScrollView } from 'react-native';
+import React, { useState } from 'react';
+import { SafeAreaView, View, Text, TouchableOpacity, Alert, Image } from 'react-native';
+import { useNavigation, NavigationProp } from '@react-navigation/native';
+// import Logo from "../../svg/Logo";
+import InputField from "../../components/InputField";
+import FingerprintButton from '../../components/Button/FingerprintButton';
+import PasswordChange from '../../svg/PasswordChange';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation } from '@react-navigation/native';
-import Logout from '../../svg/Logout';
-import Back from '../../svg/Back';
+import { RootStackParamList } from '../../types/types';
+import TPExpress from '../../assets/TPExpress.png';
+// Adjust this import
 
-interface User {
-  name: string;
-  phone: string;
-  location: string;
-  details: {
-    vehicle: string;
-    vehiclePlate: string;
-    licensePlate: string;
-    dob: string;
-    CCCD: string;
-    bankName: string;
-    bankAccount: string;
-    bankNumber: string;
-  }
-}
+type LoginScreenNavigationProp = NavigationProp<RootStackParamList, 'Auth'>;
 
-const UserProfile = () => {
-  const navigation = useNavigation();
-  const [user, setUser] = useState<User | null>(null); // State to hold user profile data
+const LoginScreen = () => {
+  const [phone, setPhone] = useState('');
+  const [password, setPassword] = useState('');
+  const navigation = useNavigation<LoginScreenNavigationProp>();
 
-  const fetchUserProfile = async () => {
+  const handlePassLogin = () => {
+    navigation.navigate('PassLogScreen' as never);
+  };
+
+  const handleRegister = () => {
+    navigation.navigate('RegisterScreen' as never);
+  };
+
+  const handleLogin = async () => {
+    const userData = {
+      phone,
+      password,
+    };
+
     try {
-      const token = await AsyncStorage.getItem('userToken'); // Get token from storage
-
-      if (!token) {
-        throw new Error('No token found');
-      }
-
-      console.log('Token:', token); // Debugging log
-
-      const response = await fetch('http://10.0.2.2:3000/user/profile/', {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`, // Attach token to Authorization header
-          'Content-Type': 'application/json',
-        },
+      const response = await fetch('http://10.0.2.2:3000/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userData),
       });
 
-      console.log('Response status:', response.status); // Debugging log
+      const data = await response.json();
+      if (response.ok) {
+        // Login successful, store the token
+        await AsyncStorage.setItem('userToken', data.token);
 
-      if (!response.ok) {
-        throw new Error('Failed to fetch user profile');
+        // Navigate to OrderScreen within HomeNavigator
+        navigation.navigate('Home' as never);
+        console.log('Login successful');
+      } else {
+        Alert.alert('Lỗi', data.message);
       }
-
-      const userProfile = await response.json();
-      setUser(userProfile); // Set the fetched user profile data
-      console.log('User profile fetched successfully', userProfile);
     } catch (error) {
-      console.error('Error fetching user profile:', error);
+      Alert.alert('Error', 'An error occurred during login.');
     }
   };
-
-  const handleLogout = async () => {
-    try {
-      await AsyncStorage.removeItem('userToken');
-      navigation.navigate('LoginScreen' as never);
-      console.log('Logout successful');
-    } catch (error) {
-      console.error('Error logging out:', error);
-    }
-  };
-
-  useEffect(() => {
-    fetchUserProfile();
-  }, []);
 
   return (
-    <ScrollView className="bg-white flex-1">
-      <View className="items-start p-4">
-        <Back />
-      </View>
-
-      <View className="items-center mt-8">
-        <Image
-          source={{ uri: '../assets/z5904438362766_91a95aa04deb0a81c882531ca5ad32df.jpg' }}
-          className="w-40 h-40 rounded-full"
-        />
-      </View>
-
-      <Text className="text-2xl font-bold text-center mt-4">
-        {user?.name || 'User Name'}
-      </Text>
-
-      <TouchableOpacity className="absolute top-24 right-5 p-3 bg-[#EB455F] rounded-full">
-        <Text className="text-white">✎</Text>
-      </TouchableOpacity>
-
-      <View className="mt-6 px-6">
-        <View className="mb-4">
-          <Text className="text-gray-500">Số điện thoại</Text>
-          <Text className="text-xl mt-2">{user?.phone || 'N/A'}</Text>
+    <SafeAreaView className="flex-1 bg-white justify-center items-center">
+      <View className="flex-1 justify-center items-center">
+        {/* Logo Placeholder */}
+        <View className="mb-8">
+          {/* <Text className="text-5xl font-bold text-pink-500">LOGO</Text> */}
+          <Image source={TPExpress} style={{ width: 220, height: 96 }} />
         </View>
 
-        <View className="mb-4">
-          <Text className="text-gray-500">Phương tiện sử dụng</Text>
-          <Text className="text-xl mt-2">{user?.details.vehicle || 'N/A'}</Text>
+        {/* App Name */}
+        <Text className="text-2xl font-bold text-black">THIEN PHUC DRIVER</Text>
+        <Text className="text-base text-gray-500 mb-6">Giao hàng bằng cả tính mạng</Text>
+
+        {/* Phone Number Input */}
+        <View className="flex p-3 justify-center items-center">
+          <InputField placeholder='Số điện thoại' value={phone} onChange={setPhone} />
+          <InputField placeholder='Mật khẩu' value={password} onChange={setPassword} />
         </View>
 
-        <View className="mb-4">
-          <Text className="text-gray-500">Địa chỉ</Text>
-          <Text className="text-xl mt-2">{user?.location || 'N/A'}</Text>
+        {/* Login Button */}
+        <View className="flex-row space-x-2">
+          <TouchableOpacity
+            onPress={handleLogin}
+            className="flex h-[50px] py-[6px] px-[24px] justify-center items-center bg-[#EB455F] w-[236px] rounded-xl mt-4"
+          >
+            <Text className="text-white text-lg font-bold">Đăng nhập</Text>
+          </TouchableOpacity>
+          <FingerprintButton />
         </View>
-      </View>
 
-      <View className="px-6">
-        <TouchableOpacity className="bg-[#EB455F] p-4 rounded-[10px] justify-center items-center flex-row" onPress={handleLogout}>
-          <View className="items-start mr-2">
-            <Logout />
-          </View>
-          <Text className="text-white text-xl font-bold">Đăng xuất</Text>
+        {/* Password Login Option */}
+        <TouchableOpacity className="mt-4 flex-col justify-center items-center" onPress={handlePassLogin}>
+          <PasswordChange />
+          <Text className="text-sm text-gray-500">Đăng nhập bằng mật khẩu</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity className="mt-4 flex-col justify-center items-center" onPress={handleRegister}>
+          <Text className="text-sm text-gray-500">Chưa có tài khoản? Hãy đăng ký ngay tại bưu cục gần nhất!</Text>
         </TouchableOpacity>
       </View>
-    </ScrollView>
+    </SafeAreaView>
   );
 };
 
-export default UserProfile;
+export default LoginScreen;

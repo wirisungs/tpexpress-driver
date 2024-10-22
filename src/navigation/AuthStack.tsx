@@ -7,6 +7,7 @@ import PassLogScreen from '../screens/auth/PassLogScreen';
 import HomeScreen from '../screens/HomeScreen';
 import OrdersScreen from '../screens/OrderScreen';
 import ProfileScreen from '../screens/ProfileScreen';
+import SettingsScreen from '../screens/SettingsScreen';
 import RegisterScreen from '../screens/auth/RegisterScreen';
 import VerifyScreen from '../screens/auth/VerifyScreen';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -20,7 +21,7 @@ const profileName = "Profile";
 const notiName = "Thông báo";
 
 const AuthStack = () => {
-	const MainTabs = () => (
+  const MainTabs = () => (
     <Tab.Navigator
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
@@ -47,23 +48,21 @@ const AuthStack = () => {
     >
       <Tab.Screen name={homeName} component={HomeScreen} />
       <Tab.Screen name={orderName} component={OrdersScreen} />
-      <Tab.Screen name={profileName} component={ProfileScreen} />
+      <Tab.Screen name={profileName} component={SettingsScreen} />
     </Tab.Navigator>
   );
 
   return (
-	<NavigationContainer>
-		<Stack.Navigator initialRouteName="LoginScreen" screenOptions={{ headerShown: false }}>
-			<Stack.Screen name="LoginScreen" component={LoginScreen} />
-			<Stack.Screen name="PassLogScreen" component={PassLogScreen} />
-			<Stack.Screen name="RegisterScreen" component={RegisterScreen} />
-			<Stack.Screen name="VerifyScreen" component={VerifyScreen} />
-		</Stack.Navigator>
-
-    <Stack.Navigator initialRouteName="HomeScreen" screenOptions={{ headerShown: false}}>
-      <Stack.Screen name="HomeScreen" component={HomeScreen} />
-    </Stack.Navigator>
-	</NavigationContainer>
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="LoginScreen" screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="LoginScreen" component={LoginScreen} />
+        <Stack.Screen name="PassLogScreen" component={PassLogScreen} />
+        <Stack.Screen name="RegisterScreen" component={RegisterScreen} />
+        <Stack.Screen name="VerifyScreen" component={VerifyScreen} />
+        <Stack.Screen name="MainTabs" component={MainTabs} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 };
+
 export default AuthStack;

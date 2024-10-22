@@ -1,5 +1,6 @@
 import { View, Text, Switch, ScrollView, Image } from 'react-native';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import OrderCard from '../components/OrderCard/OrderCard';
 import ActivityState from '../assets/ActivityState.png'; // Ensure this path is correct
 
@@ -18,19 +19,27 @@ const HomeScreen = () => {
   const [orders, setOrders] = useState<Order[]>([]);
 
   // Fetch orders from the back-end
-  useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const response = await fetch('http://10.0.2.2:3000/order');
-        const data = await response.json();
-        setOrders(data);
-      } catch (error) {
-        console.error('Error fetching orders:', error);
-      }
-    };
+  const fetchOrders = async () => {
+    try {
+      const response = await fetch('http://10.0.2.2:3000/order/');
+      const data = await response.json();
+      setOrders(data);
+    } catch (error) {
+      console.error('Error fetching orders:', error);
+    }
+  };
 
-    fetchOrders();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      // Refresh logic here
+      fetchOrders();
+      console.log('HomeScreen is focused');
+
+      return () => {
+        // Cleanup if needed
+      };
+    }, [])
+  );
 
   return (
     <View className="flex-1 p-4 bg-white">
@@ -59,7 +68,7 @@ const HomeScreen = () => {
         ) : (
           <View className="flex-col items-center">
             <Text className="text-center p-7 text-xl">Chuyển đổi trạng thái hoạt động để xem đơn hàng</Text>
-            <Image source={ActivityState} style={{ width: 300, height: 300 }} />
+            {/* <Image source={ActivityState} style={{ width: 300, height: 300 }} /> */}
           </View>
         )}
       </ScrollView>

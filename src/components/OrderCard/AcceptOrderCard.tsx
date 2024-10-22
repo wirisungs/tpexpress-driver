@@ -4,6 +4,9 @@ import { styled } from 'nativewind';
 import Divider from './Divider';
 import ConfirmationPopup from '../Popup/ConfirmationPopup';
 import DeclinedPopup from '../Popup/DeclinedPopup';
+import { useNavigation, NavigationProp } from '@react-navigation/native';
+import { RootStackParamList } from '../../types/types';
+
 
 interface Order {
   orderId: string;
@@ -26,6 +29,7 @@ const StyledText = styled(Text);
 const StyledTouchableOpacity = styled(TouchableOpacity);
 
 const AcceptOrderCard: React.FC<AcceptOrderCardProps> = ({ orders, onCompleteOrder, onDeclinedOrder }) => {
+  const navigation = useNavigation();
   const [selectedOrderCode, setSelectedOrderCode] = useState<string | null>(null);
   const [isConfirmModalVisible, setConfirmModalVisible] = useState(false);
   const [isDeclineModalVisible, setDeclineModalVisible] = useState(false);
@@ -65,11 +69,19 @@ const AcceptOrderCard: React.FC<AcceptOrderCardProps> = ({ orders, onCompleteOrd
     setSelectedOrderCode(null);
   };
 
+  const handleShowDetail = (order: Order) => {
+    console.log('Show detail for order:', order.orderId);
+    navigation.navigate('OrderDetailScreen' as never);
+  };
+
   return (
     <StyledView>
       {orders.map((item) => (
         <StyledView key={item.orderId} className="bg-white rounded-lg p-4 my-2 mx-3 shadow">
           <StyledText className="font-bold text-xl mb-2">{item.orderId}</StyledText>
+          <StyledTouchableOpacity onPress={() => handleShowDetail(item)}>
+            <StyledText className="font-bold">Chi tiết</StyledText>
+          </StyledTouchableOpacity>
           <Divider />
           <StyledText className="text-lg mb-1 mt-1">Người nhận: {item.customerId}</StyledText>
           <StyledText className="text-lg mb-1">Mặt hàng: {item.item}</StyledText>
@@ -122,4 +134,4 @@ const AcceptOrderCard: React.FC<AcceptOrderCardProps> = ({ orders, onCompleteOrd
   );
 };
 
-export default AcceptOrderCard;import { FC } from 'react';
+export default AcceptOrderCard;

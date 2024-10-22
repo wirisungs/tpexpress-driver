@@ -1,30 +1,33 @@
-import { View, Text } from 'react-native'
-import { createStackNavigator } from '@react-navigation/stack'
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
-import { NavigationContainer, DefaultTheme } from '@react-navigation/native'
+import { View, Text } from 'react-native';
+import { createStackNavigator } from '@react-navigation/stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 
 // Screens
-import OrderScreen from '../screens/OrderScreen'
-import ProfileScreen from '../screens/ProfileScreen'
-import HomeScreen from '../screens/HomeScreen'
-import LoginScreen from '../screens/auth/LoginScreen'
-import PassLogScreen from '../screens/auth/PassLogScreen'
-import RegisterScreen from '../screens/auth/RegisterScreen'
-import VerifyScreen from '../screens/auth/VerifyScreen'
-import NotificationScreen from '../screens/NotificationScreen'
+import OrderScreen from '../screens/OrderScreen';
+import ProfileScreen from '../screens/ProfileScreen';
+import HomeScreen from '../screens/HomeScreen';
+import LoginScreen from '../screens/auth/LoginScreen';
+import PassLogScreen from '../screens/auth/PassLogScreen';
+import RegisterScreen from '../screens/auth/RegisterScreen';
+import VerifyScreen from '../screens/auth/VerifyScreen';
+import NotificationScreen from '../screens/NotificationScreen';
+import SettingsScreen from '../screens/SettingsScreen';
+import OrderDetailScreen from '../screens/OrderDetailScreen';
 
 // Component
-import QRScanner from '../components/QRScanner'
+import QRScanner from '../components/QRScanner';
 
 // SVG
-import Home from '../svg/Home'
-import OrderFill from '../svg/OrderFill'
-import Notification from '../svg/Notification'
-import ProfileFill from '../svg/ProfileFill'
+import Home from '../svg/Home';
+import OrderFill from '../svg/OrderFill';
+import Notification from '../svg/Notification';
+import ProfileFill from '../svg/ProfileFill';
 
 const AuthStack = createStackNavigator();
 const HomeTab = createBottomTabNavigator();
 const RootStack = createStackNavigator();
+const OrderStack = createStackNavigator();
 
 const AuthNavigator = () => (
   <AuthStack.Navigator initialRouteName="LoginScreen" screenOptions={{ headerShown: false }}>
@@ -41,7 +44,14 @@ const BgTheme = {
     ...DefaultTheme.colors,
     background: 'white'
   },
-}
+};
+
+const OrderNavigator = () => (
+  <OrderStack.Navigator initialRouteName="OrderScreen">
+    <OrderStack.Screen name="OrderScreen" component={OrderScreen} options={{ headerShown: false }} />
+    <OrderStack.Screen name="OrderDetailScreen" component={OrderDetailScreen} options={{ title: 'Order Details' }} />
+  </OrderStack.Navigator>
+);
 
 const HomeNavigator = () => (
   <HomeTab.Navigator initialRouteName="HomeScreen"
@@ -84,11 +94,11 @@ const HomeNavigator = () => (
         height: 130,
       },
       tabBarLabel: () => null,
-      headerRight: () => <QRScanner/>
+      headerRight: () => <QRScanner />
     })}
   >
     <HomeTab.Screen name="Trang chủ" component={HomeScreen} />
-    <HomeTab.Screen name="Đơn hàng" component={OrderScreen} />
+    <HomeTab.Screen name="Đơn hàng" component={OrderNavigator} />
     <HomeTab.Screen name="Thông báo" component={NotificationScreen} />
     <HomeTab.Screen name="Tài khoản" component={ProfileScreen} options={{ headerShown: false }} />
   </HomeTab.Navigator>
@@ -105,4 +115,4 @@ const RouteManager = () => {
   );
 };
 
-export default RouteManager
+export default RouteManager;import { theme } from '../../tailwind.config';

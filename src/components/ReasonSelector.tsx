@@ -23,4 +23,4 @@ const ReasonSelector: React.FC<ReasonSelectorProps> = ({ reason, onReasonChange 
   );
 };
 
-export default ReasonSelector;import { FC } from "react";
+export default ReasonSelector;
