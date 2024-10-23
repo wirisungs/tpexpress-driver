@@ -42,7 +42,8 @@ const LoginScreen = () => {
       if (response.ok) {
         // Login successful, store the token
         await AsyncStorage.setItem('userToken', data.token);
-
+        console.log('Token:', data.token);
+        // console.log('User ID:', data.userId);
         // Navigate to OrderScreen within HomeNavigator
         navigation.navigate('Home' as never);
         console.log('Login successful');
