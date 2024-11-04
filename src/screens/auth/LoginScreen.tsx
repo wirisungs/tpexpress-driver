@@ -46,7 +46,6 @@ const LoginScreen = () => {
         // console.log('User ID:', data.userId);
         // Navigate to OrderScreen within HomeNavigator
         navigation.navigate('Home' as never);
-        console.log('Login successful');
       } else {
         Alert.alert('Lỗi', data.message);
       }

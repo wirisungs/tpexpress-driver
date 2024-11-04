@@ -5,17 +5,29 @@ import Divider from './Divider';
 import ConfirmationPopup from '../Popup/ConfirmationPopup';
 import DeclinedPopup from '../Popup/DeclinedPopup';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
-import { RootStackParamList } from '../../types/types';
+
 
 
 interface Order {
   orderId: string;
-  customerId: string;
-  item: string;
-  dropoffLocation: string;
-  pickupLocation: string;
-  note: string;
-  price: string;
+  cusId?: string;
+  senderAddress?: string;
+  receiverPhone?: string;
+  receiverName?: string;
+  receiverAddress?: string;
+  orderType?: string;
+  orderIsFragile?: boolean;
+  orderNote?: string | null;
+  orderCOD?: number;
+  dservicesId?: string;
+  totalPrice?: number;
+  paymentId?: string | null;
+  orderStatusId?: string;
+  driverId?: string | null;
+  createdDate?: Date;
+  deliverPrice?: number;
+  proofSuccess?: string | null;
+  reasonFailed?: string | null;
 }
 
 interface AcceptOrderCardProps {
@@ -83,15 +95,15 @@ const AcceptOrderCard: React.FC<AcceptOrderCardProps> = ({ orders, onCompleteOrd
             <StyledText className="font-bold">Chi tiết</StyledText>
           </StyledTouchableOpacity>
           <Divider />
-          <StyledText className="text-lg mb-1 mt-1">Người nhận: {item.customerId}</StyledText>
-          <StyledText className="text-lg mb-1">Mặt hàng: {item.item}</StyledText>
-          <StyledText className="text-lg mb-1">Địa chỉ: {item.dropoffLocation}</StyledText>
-          <StyledText className="text-lg mb-1">Note: {item.note}</StyledText>
+          <StyledText className="text-lg mb-1 mt-1">Người nhận: {item.receiverName}</StyledText>
+          <StyledText className="text-lg mb-1">SDT: {item.receiverPhone}</StyledText>
+          <StyledText className="text-lg mb-1">Địa chỉ: {item.receiverAddress}</StyledText>
+          <StyledText className="text-lg mb-1">Note: {item.orderNote}</StyledText>
           <StyledView className="flex-col justify-between items-center mt-2">
             <Divider />
             <StyledView className="flex-row justify-between w-full gap-2 mt-2">
               <StyledText className="font-bold text-xl">Tổng: </StyledText>
-              <StyledText className="font-bold text-xl text-red-500">{item.price}</StyledText>
+              <StyledText className="font-bold text-xl text-red-500">{item.totalPrice}</StyledText>
             </StyledView>
             <StyledView className="flex-row space-x-1">
               <StyledTouchableOpacity

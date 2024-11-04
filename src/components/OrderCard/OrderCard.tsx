@@ -6,12 +6,24 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface Order {
   orderId: string;
-  customerId: string;
-  item: string;
-  dropoffLocation: string;
-  pickupLocation: string;
-  note: string;
-  price: string;
+  cusId?: string;
+  senderAddress?: string;
+  receiverPhone?: string;
+  receiverName?: string;
+  receiverAddress?: string;
+  orderType?: string;
+  orderIsFragile?: boolean;
+  orderNote?: string | null;
+  orderCOD?: number;
+  dservicesId?: string;
+  totalPrice?: number;
+  paymentId?: string | null;
+  orderStatusId?: string;
+  driverId?: string | null;
+  createdDate?: Date;
+  deliverPrice?: number;
+  proofSuccess?: string | null;
+  reasonFailed?: string | null;
 }
 
 interface OrderCardProps {
@@ -59,15 +71,17 @@ const OrderCard: React.FC<OrderCardProps> = ({ order, onAcceptOrder }) => {
     <StyledView className="bg-white rounded-lg p-4 my-2 mx-3 shadow-xl">
       <StyledText className="font-bold text-xl mb-2">{order.orderId}</StyledText>
       <Divider />
-      <StyledText className="text-lg mb-1 mt-1">Người nhận: {order.customerId}</StyledText>
-      <StyledText className="text-lg mb-1">Mặt hàng: {order.item}</StyledText>
-      <StyledText className="text-lg mb-1">Địa chỉ giao: {order.dropoffLocation}</StyledText>
-      <StyledText className="text-lg mb-1">Note: {order.note}</StyledText>
+      <StyledText className="text-lg mb-1 mt-1">Người nhận: {order.receiverName || 'N/A'}</StyledText>
+      <StyledText className="text-lg mb-1">SDT Người nhận: {order.receiverPhone || 'N/A'}</StyledText>
+      <StyledText className="text-lg mb-1">Địa chỉ giao: {order.receiverAddress || 'N/A'}</StyledText>
+      <StyledText className="text-lg mb-1">Note: {order.orderNote || 'Không có ghi chú'}</StyledText>
       <StyledView className="flex-col justify-between items-center mt-2">
         <Divider />
-        <StyledView className="flex-row justify-between w-full gap-25 mt-2">
+        <StyledView className="flex-row justify-between w-full mt-2">
           <StyledText className="font-bold text-xl">Tổng: </StyledText>
-          <StyledText className="font-bold text-xl text-red-500">{order.price}</StyledText>
+          <StyledText className="font-bold text-xl text-red-500">
+            {(order.totalPrice ?? 0).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
+          </StyledText>
         </StyledView>
         <StyledTouchableOpacity
           className="w-1/2 h-12 rounded-xl mt-4"
@@ -83,4 +97,4 @@ const OrderCard: React.FC<OrderCardProps> = ({ order, onAcceptOrder }) => {
   );
 };
 
-export default OrderCard;import { FC } from 'react';
+export default OrderCard;

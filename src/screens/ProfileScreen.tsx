@@ -17,6 +17,10 @@ const UserProfile = () => {
   const navigation = useNavigation();
   const [user, setUser] = useState<User | null>(null); // State to hold user profile data
 
+  const handleSettings = () => {
+    navigation.navigate('SettingsScreen' as never);
+  }
+
   const fetchUserProfile = async () => {
     try {
       const token = await AsyncStorage.getItem('userToken'); // Get token from storage
@@ -64,44 +68,45 @@ const UserProfile = () => {
   );
 
   return (
-    <ScrollView className="bg-white flex-1">
-      <View className="items-start p-4">
-        <Back />
-      </View>
+    <View className="flex-1">
+      <ScrollView className="bg-white flex-1">
+        <TouchableOpacity className="mt-12" onPress={handleSettings}>
+          <Back />
+        </TouchableOpacity>
 
-      <View className="items-center mt-8">
-        <Image
-          source={{ uri: 'http://your_image_url_here.jpg' }} // Replace with actual image URL
-          className="w-40 h-40 rounded-full"
-        />
-      </View>
-
-      <Text className="text-2xl font-bold text-center mt-4">
-        {user?.driverName || 'User Name'}
-      </Text>
-
-      <TouchableOpacity className="absolute top-24 right-5 p-3 bg-[#EB455F] rounded-full">
-        <Text className="text-white">✎</Text>
-      </TouchableOpacity>
-
-      <View className="mt-6 px-6">
-        <View className="mb-4">
-          <Text className="text-gray-500">Số điện thoại</Text>
-          <Text className="text-xl mt-2">{user?.driverPhone || 'N/A'}</Text>
+        <View className="items-center mt-8">
+          <Image
+            source={{ uri: 'http://your_image_url_here.jpg' }} // Replace with actual image URL
+            className="w-40 h-40 rounded-full"
+          />
         </View>
 
-        <View className="mb-4">
-          <Text className="text-gray-500">Biển số xe</Text>
-          <Text className="text-xl mt-2">{user?.vehiclePlate || 'N/A'}</Text>
-        </View>
+        <Text className="text-2xl font-bold text-center mt-4">
+          {user?.driverName || 'User Name'}
+        </Text>
 
-        <View className="mb-4">
-          <Text className="text-gray-500">Địa chỉ</Text>
-          <Text className="text-xl mt-2">{user?.driverLocation || 'N/A'}</Text>
-        </View>
-      </View>
+        <TouchableOpacity className="absolute top-24 right-5 p-3 bg-[#EB455F] rounded-full">
+          <Text className="text-white">✎</Text>
+        </TouchableOpacity>
 
-      <View className="px-6">
+        <View className="mt-6 px-6">
+          <View className="mb-4">
+            <Text className="text-gray-500">Số điện thoại</Text>
+            <Text className="text-xl mt-2">{user?.driverPhone || 'N/A'}</Text>
+          </View>
+
+          <View className="mb-4">
+            <Text className="text-gray-500">Biển số xe</Text>
+            <Text className="text-xl mt-2">{user?.vehiclePlate || 'N/A'}</Text>
+          </View>
+
+          <View className="mb-4">
+            <Text className="text-gray-500">Địa chỉ</Text>
+            <Text className="text-xl mt-2">{user?.driverLocation || 'N/A'}</Text>
+          </View>
+        </View>
+      </ScrollView>
+      <View className="px-6 mb-6">
         <TouchableOpacity className="bg-[#EB455F] p-4 rounded-[10px] justify-center items-center flex-row" onPress={handleLogout}>
           <View className="items-start mr-2">
             <Logout />
@@ -109,7 +114,7 @@ const UserProfile = () => {
           <Text className="text-white text-xl font-bold">Đăng xuất</Text>
         </TouchableOpacity>
       </View>
-    </ScrollView>
+    </View>
   );
 };
 

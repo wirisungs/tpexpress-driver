@@ -12,6 +12,7 @@ export type AuthNavigatorParamList = {
   PassLogScreen: undefined;
   RegisterScreen: undefined;
   VerifyScreen: undefined;
+  OTPScreen: undefined;
 };
 
 export type OrderNavigatorParamList = {
@@ -24,9 +25,3 @@ export type RootStackParamList = {
   Auth: NavigatorScreenParams<AuthNavigatorParamList>;
 };
 
-// You can import and use this in your LoginScreenimport LoginScreen from '../screens/auth/LoginScreen';
-import PassLogScreen from '../screens/auth/PassLogScreen';
-import RegisterScreen from '../screens/auth/RegisterScreen';
-import VerifyScreen from '../screens/auth/VerifyScreen';
-import OrderScreen from '../screens/OrderScreen';
-import Home from '../svg/Home';
