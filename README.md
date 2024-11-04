@@ -1,10 +1,13 @@
+# TPExpress for Drivers
 
-# TPExpress for Driver
+This is an app for drivers who are working for TPExpress.
 
-This is an app for drivers who working for TPExpress
+## Features
 
-
-
+- Real-time tracking
+- Route optimization
+- Delivery status updates
+- Driver performance analytics
 
 ## Run Locally
 
@@ -31,4 +34,3 @@ Start the app
 ```bash
   npm start
 ```
-
