@@ -63,22 +63,30 @@ const BgTheme = {
 const OrderDoneNavigator = () => (
   <OrderDoneStack.Navigator initialRouteName="CompletedOrdersScreen" screenOptions={{
     headerTintColor: '#e91e63',
-      headerTitleStyle: {
-        fontWeight: 'bold',
-        fontSize: 25,
-        textAlign: 'center',
-      },
-      headerStyle: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
-        elevation: 5,
-        height: 130,
-      },
-    }}>
-    <OrderDoneStack.Screen name="CompletedOrdersScreen" component={CompletedOrdersScreen} options={{ title: 'Đơn hàng của bạn' }} />
-    <OrderDoneStack.Screen name="FailedOrdersScreen" component={FailedOrdersScreen} options={{ title: 'Đơn hàng của bạn' }} />
+    headerTitleStyle: {
+      fontWeight: 'bold',
+      fontSize: 25,
+      textAlign: 'center',
+    },
+    headerStyle: {
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.25,
+      shadowRadius: 3.84,
+      elevation: 5,
+      height: 130,
+    },
+  }}>
+    <OrderDoneStack.Screen
+      name="CompletedOrdersScreen"
+      component={CompletedOrdersScreen}
+      options={{ title: 'Đơn hàng của bạn', animationEnabled: false }}
+    />
+    <OrderDoneStack.Screen
+      name="FailedOrdersScreen"
+      component={FailedOrdersScreen}
+      options={{ title: 'Đơn hàng của bạn', animationEnabled: false }}
+    />
   </OrderDoneStack.Navigator>
 );
 

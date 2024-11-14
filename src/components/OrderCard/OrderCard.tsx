@@ -49,15 +49,17 @@ const OrderCard: React.FC<OrderCardProps> = ({ order, onAcceptOrder }) => {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
+        body: JSON.stringify({ statusId: 'ST002' })
       });
 
-      const data = await response.json();
-      if (response.ok) {
-        Alert.alert('Success', 'Order accepted successfully');
-        onAcceptOrder(order.orderId);
-      } else {
-        Alert.alert('Error', data.message || 'Failed to accept order');
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || 'Nhận đơn thất bại');
       }
+
+      const data = await response.json();
+      Alert.alert('Thành công', 'Đơn hàng đã được nhận');
+      onAcceptOrder(order.orderId);
     } catch (error) {
       if (error instanceof Error) {
         Alert.alert('Error', error.message);

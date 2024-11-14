@@ -8,8 +8,7 @@ import PasswordChange from '../../svg/PasswordChange';
 const RegisterScreen = () => {
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
-  const [vehicle, setVehicle] = useState('');
-  const [location, setLocation] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigation = useNavigation();
 
@@ -31,8 +30,7 @@ const RegisterScreen = () => {
     const userData = {
       name,
       phone,
-      vehicle,
-      location,
+      email,
       password,
     };
 
@@ -46,7 +44,7 @@ const RegisterScreen = () => {
       const data = await response.json();
       if (response.ok) {
         // Registration successful, navigate to HomeScreen
-        navigation.navigate('HomeScreen' as never);
+        navigation.navigate('Home' as never);
       } else {
         Alert.alert('Error', data.message);
       }
@@ -64,8 +62,7 @@ const RegisterScreen = () => {
         <View className="flex p-3 justify-center items-center w-[318px]">
           <InputField placeholder="Họ và tên" value={name} onChange={setName} />
           <InputField placeholder="Số điện thoại" value={phone} onChange={setPhone} />
-          <InputField placeholder="Phương tiện sử dụng" value={vehicle} onChange={setVehicle} />
-          <InputField placeholder="Địa chỉ" value={location} onChange={setLocation} />
+          <InputField placeholder="Email" value={email} onChange={setEmail} />
           <InputField placeholder="Mật khẩu" value={password} onChange={setPassword} />
         </View>
 

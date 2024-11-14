@@ -89,6 +89,7 @@ const OrderScreen = () => {
           Authorization: `Bearer ${token}`, // Attach the token in the Authorization header
           'Content-Type': 'application/json',
         },
+        body: JSON.stringify({ statusId: 'ST003' })
       });
 
       const data = await response.json();
@@ -125,6 +126,7 @@ const OrderScreen = () => {
           Authorization: `Bearer ${token}`, // Attach the token in the Authorization header
           'Content-Type': 'application/json',
         },
+        body: JSON.stringify({ statusId: 'ST003' })
       });
 
       const data = await response.json();

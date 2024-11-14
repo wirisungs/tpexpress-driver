@@ -27,6 +27,11 @@ interface Order {
   reasonFailed?: string | null;
 }
 
+interface Driver {
+  driverId: string;
+  driverStatus: boolean;
+}
+
 const HomeScreen = () => {
   const [isWorking, setIsWorking] = useState(false);
   const [orders, setOrders] = useState<Order[]>([]);
@@ -45,13 +50,12 @@ const HomeScreen = () => {
 
     try {
       const token = await AsyncStorage.getItem('userToken');
-      const response = await fetch('http://10.0.2.2:3000/driver/toggle-status', {
+      const response = await fetch(`http://10.0.2.2:3000/driver/toggle-status/${driverId}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ driverId }),
       });
 
       const text = await response.text();
