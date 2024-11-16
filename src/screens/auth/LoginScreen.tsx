@@ -84,6 +84,12 @@ const LoginScreen = () => {
           <FingerprintButton />
         </View>
 
+        {/* SSO Button */}
+        <TouchableOpacity className="mt-4 flex-col justify-center items-center">
+          {/* <Logo /> */}
+          <Text className="text-sm text-gray-500">Đăng nhập bằng Oggy Club</Text>
+        </TouchableOpacity>
+
         {/* Password Login Option */}
         <TouchableOpacity className="mt-4 flex-col justify-center items-center" onPress={handlePassLogin}>
           <PasswordChange />
