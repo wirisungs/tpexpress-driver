@@ -11,16 +11,15 @@ const InputField: React.FC<InputFieldProps & { value: string, onChange: (text: s
   };
 
   return (
-    <View>
-      <TextInput
-        className="border border-gray-300 rounded-xl p-4 text-lg justify-center items-center w-[318px] mt-3"
-        placeholder={placeholder}
-        keyboardType={placeholder === "Số điện thoại" ? "phone-pad" : "default"}
-        value={value}
-        onChangeText={handleChange}
-        secureTextEntry={placeholder === "Mật khẩu"}
-      />
-    </View>
+    <TextInput
+      className="border border-gray-300 rounded-xl p-4 text-lg justify-center items-center w-[318px] mt-3"
+      placeholder={placeholder}
+      keyboardType={placeholder === "Số điện thoại" ? "phone-pad" : "default"}
+      value={value}
+      onChangeText={handleChange}
+      secureTextEntry={placeholder === "Mật khẩu"}
+      maxLength={placeholder === "Số điện thoại" ? 10 : placeholder === "Mật khẩu" ? 50 : undefined}
+    />
   )
 }
 
