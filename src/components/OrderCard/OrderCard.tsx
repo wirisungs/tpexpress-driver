@@ -38,33 +38,52 @@ const StyledTouchableOpacity = styled(TouchableOpacity);
 const OrderCard: React.FC<OrderCardProps> = ({ order, onAcceptOrder }) => {
   const handleAcceptOrder = async () => {
     try {
+      // Retrieve the token from AsyncStorage
       const token = await AsyncStorage.getItem('userToken');
       if (!token) {
         throw new Error('No token found');
       }
 
+      // Send PUT request to accept the order
       const response = await fetch(`http://10.0.2.2:3000/order/accept/${order.orderId}`, {
         method: 'PUT',
         headers: {
-          'Authorization': `Bearer ${token}`,
+          'Authorization': `Bearer ${token}`,  // Include the token in the Authorization header
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ statusId: 'ST002' })
+        body: JSON.stringify({ statusId: 'ST002' }), // Status for accepted orders
       });
 
+      // Check if the response is not ok (non-2xx status)
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.message || 'Nhận đơn thất bại');
+        throw new Error(data.message || 'Lỗi nhận đơn từ hệ thống');
       }
 
+      // Parse the response data
       const data = await response.json();
-      Alert.alert('Thành công', 'Đơn hàng đã được nhận');
-      onAcceptOrder(order.orderId);
+
+      // Handle any backend-specific errors, such as validation errors
+      if (data && data.error) {
+        throw new Error(data.error || 'Lỗi không xác định');
+      }
+
+      // Show success alert
+      Alert.alert('Success', 'Đã nhận đơn thành công');
+
+      // Update the parent component state
+      onAcceptOrder(order.orderId);  // This can be used to update the UI or remove the accepted order from the list
+
     } catch (error) {
       if (error instanceof Error) {
+        // Handle known errors such as missing token or response issues
         Alert.alert('Error', error.message);
+      } else if ((error as Error).message === 'Network request failed') {
+        // Handle network errors
+        Alert.alert('Network Error', 'Could not connect to the server. Please check your internet connection.');
       } else {
-        Alert.alert('Error', 'An unexpected error occurred');
+        // Catch-all for unexpected errors
+        Alert.alert('Error', 'An unexpected error occurred. Please try again later.');
       }
     }
   };

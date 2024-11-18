@@ -1,7 +1,7 @@
 import { View, Text } from 'react-native'
 import React, { useState, useEffect } from 'react'
-import HeaderProfile from '../components/Profile/HeaderProfile'
-import ProfileMenu from '../components/Profile/ProfileMenu'
+import HeaderProfile from '../../components/Profile/HeaderProfile'
+import ProfileMenu from '../../components/Profile/ProfileMenu'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';

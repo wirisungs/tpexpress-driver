@@ -2,8 +2,8 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { View, Text, Image, TouchableOpacity, ScrollView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
-import Logout from '../svg/Logout';
-import Back from '../svg/Back';
+import Logout from '../../svg/Logout';
+import Back from '../../svg/Back';
 
 interface User {
   driverName: string;

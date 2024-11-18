@@ -1,10 +1,10 @@
 import React from "react";
 import { View, Text, Image, ScrollView } from "react-native";
-import OrderStatus from "../components/OrderTracking/OrderStatus";
-import DeliveryInfo from "../components/OrderTracking/DeliveryInfo";
-import Invoice from "../components/OrderTracking/Invoice";
-import CancelButton from "../components/OrderTracking/CancelButton";
-import Copy from '../svg/Copy'
+import OrderStatus from "../../components/OrderTracking/OrderStatus";
+import DeliveryInfo from "../../components/OrderTracking/DeliveryInfo";
+import Invoice from "../../components/OrderTracking/Invoice";
+import CancelButton from "../../components/OrderTracking/CancelButton";
+import Copy from '../../svg/Copy'
 
 const OrderDetailScreen: React.FC = () => {
   return (

@@ -43,7 +43,6 @@ const LoginScreen = () => {
         // Login successful, store the token
         await AsyncStorage.setItem('userToken', data.token);
         console.log('Token:', data.token);
-        // console.log('User ID:', data.userId);
         // Navigate to OrderScreen within HomeNavigator
         navigation.navigate('Home' as never);
       } else {
@@ -77,13 +76,12 @@ const LoginScreen = () => {
         <View className="flex-row space-x-2">
           <TouchableOpacity
             onPress={handleLogin}
-            className="flex h-[50px] py-[6px] px-[24px] justify-center items-center bg-[#EB455F] w-[236px] rounded-xl mt-4"
+            className="h-[50px] py-[6px] px-[24px] justify-center items-center bg-[#EB455F] w-[235px] rounded-xl mt-4"
           >
             <Text className="text-white text-lg font-bold">Đăng nhập</Text>
           </TouchableOpacity>
           <FingerprintButton />
         </View>
-
 
         {/* Password Login Option */}
         <TouchableOpacity className="mt-4 flex-col justify-center items-center" onPress={handlePassLogin}>
@@ -92,7 +90,7 @@ const LoginScreen = () => {
         </TouchableOpacity>
 
         <TouchableOpacity className="mt-4 flex-col justify-center items-center" onPress={handleRegister}>
-          <Text className="text-sm text-gray-500">Chưa có tài khoản? Hãy đăng ký ngay tại bưu cục gần nhất!</Text>
+          <Text className="text-sm text-gray-500">Chưa có tài khoản? Hãy đăng ký ngay</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

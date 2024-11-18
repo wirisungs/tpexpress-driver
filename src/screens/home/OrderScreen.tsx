@@ -3,7 +3,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import AcceptOrderCard from '../components/OrderCard/AcceptOrderCard';
+import AcceptOrderCard from '../../components/OrderCard/AcceptOrderCard';
 
 interface Order {
   orderId: string;
@@ -26,7 +26,6 @@ const OrderScreen = () => {
     try {
       // Get the auth token from AsyncStorage
       const token = await AsyncStorage.getItem('userToken');
-
       if (!token) {
         // If no token is found, show an error message
         Alert.alert('Error', 'No authentication token found');
@@ -35,8 +34,10 @@ const OrderScreen = () => {
 
       // Make the request to fetch orders, attaching the token in the Authorization header
       const response = await fetch('http://10.0.2.2:3000/order/ongoing', {
+        method: 'GET',
         headers: {
           Authorization: `Bearer ${token}`, // Attach the token in the Authorization header
+          'Content-Type': 'application/json',
         },
       });
 

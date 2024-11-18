@@ -3,7 +3,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import OrderCard from '../../components/OrderCard/OrderCard';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import ActivityState from '../../assets/ActivityState.png';
+import ActivityState from '../assets/ActivityState.png';
 
 interface Order {
   orderId: string;
@@ -144,7 +144,7 @@ const HomeScreen = () => {
         ) : (
           <View className="flex-col items-center">
             <Text className="text-center p-7 text-xl">Chuyển đổi trạng thái hoạt động để xem đơn hàng</Text>
-            <Image source={ActivityState} style={{ width: 300, height: 300 }} />
+            {/* <Image source={ActivityState} style={{ width: 300, height: 300 }} /> */}
           </View>
         )}
       </ScrollView>

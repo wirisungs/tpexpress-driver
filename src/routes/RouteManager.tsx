@@ -5,23 +5,23 @@ import React from 'react';
 import { View, Text } from 'react-native';
 
 // Screens
-import OrderScreen from '../screens/OrderScreen';
-import ProfileScreen from '../screens/ProfileScreen';
-import HomeScreen from '../screens/HomeScreen';
+import SSOScreen from '../screens/auth/SSOScreen';
+import OrderScreen from '../screens/home/OrderScreen';
+import ProfileScreen from '../screens/user/ProfileScreen';
+import HomeScreen from '../screens/home/HomeScreen';
 import LoginScreen from '../screens/auth/LoginScreen';
-import PassLogScreen from '../screens/auth/PassLogScreen';
 import RegisterScreen from '../screens/auth/RegisterScreen';
 import VerifyScreen from '../screens/auth/VerifyScreen';
-import NotificationScreen from '../screens/NotificationScreen';
-import SettingsScreen from '../screens/SettingsScreen';
-import OrderDetailScreen from '../screens/OrderDetailScreen';
-import WalletScreen from '../screens/WalletScreen';
-import HistoryScreen from '../screens/HistoryScreen';
-import SecurityScreen from '../screens/SecurityScreen';
-import HelpScreen from '../screens/HelpScreen';
-import TermsScreen from '../screens/TermsScreen';
-import InfoScreen from '../screens/InfoScreen';
-import GuidesScreen from '../screens/GuidesScreen';
+import NotificationScreen from '../screens/home/NotificationScreen';
+import SettingsScreen from '../screens/home/SettingsScreen';
+import OrderDetailScreen from '../screens/order/OrderDetailScreen';
+import WalletScreen from '../screens/user/WalletScreen';
+import HistoryScreen from '../screens/user/HistoryScreen';
+import SecurityScreen from '../screens/user/SecurityScreen';
+import HelpScreen from '../screens/user/HelpScreen';
+import TermsScreen from '../screens/user/TermsScreen';
+import InfoScreen from '../screens/user/InfoScreen';
+import GuidesScreen from '../screens/user/GuidesScreen';
 
 // Component
 import QRScanner from '../components/QRScanner';
@@ -31,8 +31,8 @@ import Home from '../svg/Home';
 import OrderFill from '../svg/OrderFill';
 import Notification from '../svg/Notification';
 import ProfileFill from '../svg/ProfileFill';
-import CompletedOrdersScreen from '../screens/CompletedOrdersScreen';
-import FailedOrdersScreen from '../screens/FailedOrdersScreen';
+import CompletedOrdersScreen from '../screens/order/CompletedOrdersScreen';
+import FailedOrdersScreen from '../screens/order/FailedOrdersScreen';
 import OTPScreen from '../screens/auth/OTPScreen';
 
 const AuthStack = createStackNavigator();
@@ -43,9 +43,8 @@ const ProfileStack = createStackNavigator();
 const OrderDoneStack = createStackNavigator();
 
 const AuthNavigator = () => (
-  <AuthStack.Navigator initialRouteName="LoginScreen" screenOptions={{ headerShown: false }}>
-    <AuthStack.Screen name="LoginScreen" component={LoginScreen} />
-    <AuthStack.Screen name="PassLogScreen" component={PassLogScreen} />
+  <AuthStack.Navigator initialRouteName="SSOScreen" screenOptions={{ headerShown: false }}>
+    <AuthStack.Screen name="SSOScreen" component={SSOScreen} />
     <AuthStack.Screen name="RegisterScreen" component={RegisterScreen} />
     <AuthStack.Screen name="VerifyScreen" component={VerifyScreen} />
     <AuthStack.Screen name="OTPScreen" component={OTPScreen} />

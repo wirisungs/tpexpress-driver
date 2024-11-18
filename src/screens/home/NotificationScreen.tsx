@@ -1,6 +1,6 @@
 import React from 'react'
 import { ScrollView } from 'react-native-gesture-handler'
-import Noti from '../components/Noti'
+import Noti from '../../components/Noti'
 
 const NotificationScreen = () => {
   return (
