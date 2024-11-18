@@ -1,9 +1,9 @@
 import { View, Text, Switch, ScrollView, Image } from 'react-native';
 import React, { useState, useEffect, useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
-import OrderCard from '../components/OrderCard/OrderCard';
+import OrderCard from '../../components/OrderCard/OrderCard';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import ActivityState from '../assets/ActivityState.png';
+import ActivityState from '../../assets/ActivityState.png';
 
 interface Order {
   orderId: string;
