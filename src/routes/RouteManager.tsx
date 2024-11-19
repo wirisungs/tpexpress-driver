@@ -15,7 +15,7 @@ import VerifyScreen from '../screens/auth/VerifyScreen';
 import NotificationScreen from '../screens/home/NotificationScreen';
 import SettingsScreen from '../screens/home/SettingsScreen';
 import OrderDetailScreen from '../screens/order/OrderDetailScreen';
-import WalletScreen from '../screens/user/WalletScreen';
+import WalletScreen from '../screens/wallet/WalletScreen';
 import HistoryScreen from '../screens/user/HistoryScreen';
 import SecurityScreen from '../screens/user/SecurityScreen';
 import HelpScreen from '../screens/user/HelpScreen';
@@ -41,6 +41,7 @@ const RootStack = createStackNavigator();
 const OrderStack = createStackNavigator();
 const ProfileStack = createStackNavigator();
 const OrderDoneStack = createStackNavigator();
+const WalletStack = createStackNavigator();
 
 const AuthNavigator = () => (
   <AuthStack.Navigator initialRouteName="SSOScreen" screenOptions={{ headerShown: false }}>
@@ -94,6 +95,12 @@ const OrderNavigator = () => (
     <OrderStack.Screen name="OrderScreen" component={OrderScreen} options={{ headerShown: false }} />
     <OrderStack.Screen name="OrderDetailScreen" component={OrderDetailScreen} options={{ title: 'Order Details' }} />
   </OrderStack.Navigator>
+);
+
+const WalletNavigator = () => (
+    <WalletStack.Navigator initialRouteName="WalletScreen">
+        <WalletStack.Screen name="WalletScreen" component={WalletScreen} options={{ headerShown: false }} />
+    </WalletStack.Navigator>
 );
 
 const ProfileNavigator = () => (

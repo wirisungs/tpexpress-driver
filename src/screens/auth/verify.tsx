@@ -43,7 +43,7 @@ const Verify = () => {
 
   const checkEmailExists = async (name: string, email: string, birth: Date) => {
     try {
-      const response = await fetch(`http://localhost:3000/user/email/?email=${email}`);
+      const response = await fetch(`http://localhost:3000/api/cusE?email=${email}`);
       const data = await response.json();
 
       if (data.exists) {
@@ -78,7 +78,7 @@ const Verify = () => {
 
   const createAccount = async (userData: {cusId: string; name: string; email: string; phone: string; address: string; birth: Date, cusGender: number }) => {
     try {
-      const response = await fetch("http://localhost:3000/sso/save", {
+      const response = await fetch("http://tpexpress.ddns.net:3000/api/cusE", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -111,7 +111,7 @@ const Verify = () => {
           navigation.dispatch(
             CommonActions.reset({
               index: 0,
-              routes: [{ name: 'Home', params: { email: decoded.email } }],
+              routes: [{ name: 'HomePage', params: { email: decoded.email } }],
             })
           );
         } else {
