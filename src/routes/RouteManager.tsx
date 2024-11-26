@@ -5,13 +5,13 @@ import React from 'react';
 import { View, Text } from 'react-native';
 
 // Screens
-import SSOScreen from '../screens/auth/SSOScreen';
+import SSO from '../screens/auth/SSO';
+import Verify from '../screens/auth/verify';
 import OrderScreen from '../screens/home/OrderScreen';
 import ProfileScreen from '../screens/user/ProfileScreen';
 import HomeScreen from '../screens/home/HomeScreen';
 import LoginScreen from '../screens/auth/LoginScreen';
 import RegisterScreen from '../screens/auth/RegisterScreen';
-import VerifyScreen from '../screens/auth/VerifyScreen';
 import NotificationScreen from '../screens/home/NotificationScreen';
 import SettingsScreen from '../screens/home/SettingsScreen';
 import OrderDetailScreen from '../screens/order/OrderDetailScreen';
@@ -22,6 +22,10 @@ import HelpScreen from '../screens/user/HelpScreen';
 import TermsScreen from '../screens/user/TermsScreen';
 import InfoScreen from '../screens/user/InfoScreen';
 import GuidesScreen from '../screens/user/GuidesScreen';
+import RevenueScreen from '../screens/home/RevenueScreen';
+import CompletedOrdersScreen from '../screens/order/CompletedOrdersScreen';
+import FailedOrdersScreen from '../screens/order/FailedOrdersScreen';
+import OTPScreen from '../screens/auth/OTPScreen';
 
 // Component
 import QRScanner from '../components/QRScanner';
@@ -31,9 +35,8 @@ import Home from '../svg/Home';
 import OrderFill from '../svg/OrderFill';
 import Notification from '../svg/Notification';
 import ProfileFill from '../svg/ProfileFill';
-import CompletedOrdersScreen from '../screens/order/CompletedOrdersScreen';
-import FailedOrdersScreen from '../screens/order/FailedOrdersScreen';
-import OTPScreen from '../screens/auth/OTPScreen';
+import Bank from '../svg/Bank';
+
 
 const AuthStack = createStackNavigator();
 const HomeTab = createBottomTabNavigator();
@@ -42,12 +45,14 @@ const OrderStack = createStackNavigator();
 const ProfileStack = createStackNavigator();
 const OrderDoneStack = createStackNavigator();
 const WalletStack = createStackNavigator();
+const ProfileTab = createBottomTabNavigator();
 
 const AuthNavigator = () => (
-  <AuthStack.Navigator initialRouteName="SSOScreen" screenOptions={{ headerShown: false }}>
-    <AuthStack.Screen name="SSOScreen" component={SSOScreen} />
+  <AuthStack.Navigator initialRouteName="SSO" screenOptions={{ headerShown: false }}>
+    <AuthStack.Screen name="SSO" component={SSO} />
+    <AuthStack.Screen name="Verify" component={Verify} />
+    <AuthStack.Screen name="LoginScreen" component={LoginScreen} />
     <AuthStack.Screen name="RegisterScreen" component={RegisterScreen} />
-    <AuthStack.Screen name="VerifyScreen" component={VerifyScreen} />
     <AuthStack.Screen name="OTPScreen" component={OTPScreen} />
   </AuthStack.Navigator>
 );
@@ -105,7 +110,13 @@ const WalletNavigator = () => (
 
 const ProfileNavigator = () => (
   <ProfileStack.Navigator initialRouteName="SettingsScreen">
-    <ProfileStack.Screen name="ProfileScreen" component={ProfileScreen} options={{ headerShown: false }} />
+    <ProfileStack.Screen
+      name="ProfileScreen"
+      component={ProfileScreen}
+      options={{
+        headerShown: false
+      }}
+    />
     <ProfileStack.Screen name="WalletScreen" component={WalletScreen} options={{ title: 'Ví của bạn' }} />
     <ProfileStack.Screen name="HistoryScreen" component={HistoryScreen} options={{ title: 'Lịch sử' }} />
     <ProfileStack.Screen name="SecurityScreen" component={SecurityScreen} options={{ title: 'Bảo mật' }} />
@@ -124,7 +135,7 @@ const HomeNavigator = () => (
       tabBarActiveTintColor: '#e91e63',
       tabBarInactiveTintColor: '#000',
       tabBarIcon: ({ focused }) => {
-        let iconColor = focused ? '#e91e63' : '#000';
+        let iconColor = focused ? '#2FA087' : '#000';
         let icon;
         if (route.name === "Trang chủ") {
           icon = <Home fill={iconColor} />;
@@ -134,11 +145,13 @@ const HomeNavigator = () => (
           icon = <Notification fill={iconColor} />;
         } else if (route.name === "Tài khoản") {
           icon = <ProfileFill fill={iconColor} />;
+        } else if (route.name === "Doanh thu") {
+          icon = <Bank fill={iconColor} />;
         }
         return (
           <View style={{ alignItems: 'center' }}>
             {icon}
-            <Text style={{ marginTop: 6, color: focused ? '#e91e63' : '#000' }}>{route.name}</Text>
+            <Text style={{ marginTop: 6, color: focused ? '#2FA087' : '#000' }}>{route.name}</Text>
           </View>
         );
       },
@@ -165,7 +178,14 @@ const HomeNavigator = () => (
     <HomeTab.Screen name="Trang chủ" component={HomeScreen} />
     <HomeTab.Screen name="Đơn hàng" component={OrderNavigator} />
     <HomeTab.Screen name="Thông báo" component={NotificationScreen} />
-    <HomeTab.Screen name="Tài khoản" component={ProfileNavigator} options={{ headerShown: false }} />
+    <HomeTab.Screen name="Doanh thu" component={RevenueScreen} />
+    <HomeTab.Screen
+      name="Tài khoản"
+      component={ProfileNavigator}
+      options={{
+        headerShown: false,
+      }}
+    />
   </HomeTab.Navigator>
 );
 

@@ -1,4 +1,4 @@
-//Desc: Entry point of the app
+// Desc: Entry point of the app
 import React from 'react';
 import RouteManager from './src/routes/RouteManager';
 
@@ -7,4 +7,3 @@ const App = () => {
 };
 
 export default App;
-

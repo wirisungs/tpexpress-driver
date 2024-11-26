@@ -1,9 +1,8 @@
-import { View, Text, Switch, ScrollView, Image } from 'react-native';
+import { View, Text, Switch, ScrollView, Alert, Image } from 'react-native';
 import React, { useState, useEffect, useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import OrderCard from '../../components/OrderCard/OrderCard';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import ActivityState from '../assets/ActivityState.png';
 
 interface Order {
   orderId: string;
@@ -27,16 +26,12 @@ interface Order {
   reasonFailed?: string | null;
 }
 
-interface Driver {
-  driverId: string;
-  driverStatus: boolean;
-}
-
 const HomeScreen = () => {
   const [isWorking, setIsWorking] = useState(false);
   const [orders, setOrders] = useState<Order[]>([]);
   const [driverId, setDriverId] = useState<string | null>(null);
 
+  // Fetch driverId when the component mounts
   useEffect(() => {
     const fetchDriverId = async () => {
       const storedDriverId = await AsyncStorage.getItem('driverId');
@@ -45,6 +40,7 @@ const HomeScreen = () => {
     fetchDriverId();
   }, []);
 
+  // Toggle driver status
   const toggleDriverStatus = async () => {
     if (!driverId) return;
 
@@ -64,7 +60,8 @@ const HomeScreen = () => {
       if (response.ok) {
         const data = JSON.parse(text);
         console.log(`Driver status updated: ${data.message}`);
-        setIsWorking(data.driverStatus);
+        setIsWorking(data.driverStatus); // Update the status based on response
+        fetchOrders(); // Re-fetch orders when status changes
       } else {
         console.error('Failed to update driver status:', text);
       }
@@ -76,42 +73,42 @@ const HomeScreen = () => {
   // Fetch orders from the back-end
   const fetchOrders = async () => {
     try {
-      // Retrieve the token if needed for authorization
       const token = await AsyncStorage.getItem('userToken');
+      if (!token) {
+        Alert.alert('Error', 'No authentication token found');
+        return;
+      }
 
-      // Fetch orders from the backend
       const response = await fetch('http://10.0.2.2:3000/order/pending', {
         headers: {
-          'Authorization': `Bearer ${token}`, // Include token if the API requires authorization
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
       });
 
-      // Check if the response is okay
       if (!response.ok) {
         const errorData = await response.json();
         console.error('Failed to fetch orders:', errorData);
         throw new Error(`Error fetching orders: ${errorData.message || 'Unknown error'}`);
       }
 
-      // Parse the JSON data
       const data = await response.json();
       setOrders(data); // Update the state with fetched orders
     } catch (error) {
-      if (error instanceof Error) {
-        console.error('Error fetching orders:', error.message);
-      } else {
-        console.error('Error fetching orders:', error);
-      }
+      console.error('Error fetching orders:', error instanceof Error ? error.message : error);
     }
   };
 
+  // useFocusEffect to refresh orders when the screen is focused
   useFocusEffect(
     useCallback(() => {
-      if (isWorking) fetchOrders();
+      if (isWorking) {
+        fetchOrders();
+      }
     }, [isWorking])
   );
 
+  // Handle toggle state change
   const handleToggleChange = () => {
     setIsWorking((prev) => !prev);
     toggleDriverStatus();
@@ -132,6 +129,7 @@ const HomeScreen = () => {
           {isWorking ? "Đang hoạt động" : "Không hoạt động"}
         </Text>
       </View>
+
       <ScrollView className="flex-1">
         {isWorking ? (
           orders.length > 0 ? (
@@ -139,7 +137,7 @@ const HomeScreen = () => {
               <OrderCard key={order.orderId} order={order} onAcceptOrder={(id) => console.log(`Order accepted: ${id}`)} />
             ))
           ) : (
-            <Text>No orders available</Text>
+            <Text>Không có đơn hàng</Text>
           )
         ) : (
           <View className="flex-col items-center">

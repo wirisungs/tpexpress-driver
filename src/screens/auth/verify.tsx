@@ -17,9 +17,12 @@ const Verify = () => {
     if (valueFromWeb) {
       try {
         const decoded = jwtDecode(valueFromWeb);
+        AsyncStorage.setItem('userToken', valueFromWeb)
+        .then(() => console.log('Token saved successfully:', valueFromWeb))
+        .catch((error) => console.error('Error saving token:', error));
         setDecodedToken(decoded);
         AsyncStorage.setItem('decodedToken', JSON.stringify(decoded));
-
+        console.log('decodedToken:', decoded);
         // Lưu email riêng biệt trong AsyncStorage
         AsyncStorage.setItem('email', decoded.email);
 
@@ -35,20 +38,30 @@ const Verify = () => {
   }, [valueFromWeb]);
 
 
-  const generateCusId = () => {
+  const generateDriverId = () => {
     const randomNumber = Math.floor(10000000 + Math.random() * 90000000); // Tạo số ngẫu nhiên 8 chữ số
-    return `KH${randomNumber}`;
+    return `TX${randomNumber}`;
   };
 
 
   const checkEmailExists = async (name: string, email: string, birth: Date) => {
     try {
-      const response = await fetch(`http://localhost:3000/api/cusE?email=${email}`);
+      const response = await fetch(`http://10.0.2.2:3000/user/email?email=${email}`);
       const data = await response.json();
+
+      console.log("API response:", data); // Kiểm tra toàn bộ dữ liệu trả về từ API
 
       if (data.exists) {
         setEmailExists(true);
-        // Email đã tồn tại, chờ 3 giây rồi chuyển hướng sang HomePage
+        // Kiểm tra xem driverId có tồn tại trong data không
+        if (data.driverId) {
+          AsyncStorage.setItem('driverId', data.driverId);
+          console.log('Driver ID saved from existing user:', data.driverId);
+        } else {
+          console.log('Driver ID is not found in API response');
+        }
+
+        // Chờ 3 giây rồi chuyển hướng sang HomePage
         setTimeout(() => {
           navigateToHomePage();
         }, 2000);
@@ -56,13 +69,13 @@ const Verify = () => {
         setEmailExists(false);
         // Email không tồn tại, tạo tài khoản và xác thực lại
         await createAccount({
-          cusId: generateCusId(),
+          driverId: generateDriverId(),
           name,
           email,
           phone: '',
           address: '',
           birth,
-          cusGender: 0
+          driverGender: 0
         });
         setEmailExists(true);
         // Sau khi tạo tài khoản, chờ 3 giây rồi chuyển hướng sang HomePage
@@ -76,19 +89,23 @@ const Verify = () => {
   };
 
 
-  const createAccount = async (userData: {cusId: string; name: string; email: string; phone: string; address: string; birth: Date, cusGender: number }) => {
+  const createAccount = async (userData: { driverId: string; name: string; email: string; phone: string; address: string; birth: Date, driverGender: number }) => {
     try {
-      const response = await fetch("http://tpexpress.ddns.net:3000/api/cusE", {
+      console.log("Creating account with userData:", userData); // Add console log for userData
+      const response = await fetch("http://10.0.2.2:3000/user/sso/save", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(userData),
+        body: JSON.stringify(userData)
       });
 
       if (response.ok) {
         const data = await response.json();
         console.log(data.message); // Hiển thị thông báo thành công
+        // Lưu driverId vào AsyncStorage sau khi tạo tài khoản thành công
+        AsyncStorage.setItem('driverId', data.driverId);
+        console.log('Driver ID saved:', data.driverId);
       } else {
         const errorData = await response.json();
         console.error("Lỗi khi tạo tài khoản fe:", errorData.error);
@@ -111,7 +128,7 @@ const Verify = () => {
           navigation.dispatch(
             CommonActions.reset({
               index: 0,
-              routes: [{ name: 'HomePage', params: { email: decoded.email } }],
+              routes: [{ name: 'Home', params: { email: decoded.email } }],
             })
           );
         } else {
@@ -133,18 +150,17 @@ const Verify = () => {
         <Text style={styles.successText}>THIEN PHUC EXPRESS </Text>
       </View>
 
-      {/* {decodedToken && (
+      {decodedToken && (
         <View>
-          <Text style={styles.emailText}>Thông tin giải mã: {decodedToken.firstName}</Text>
-          <Text className="text-lg">Thông tin giải mã: {decodedToken.email}</Text>
-          <Text className="text-m">{JSON.stringify(decodedToken, null, 2)}</Text>
+
+          {/* <Text className="text-m">{JSON.stringify(decodedToken, null, 2)}</Text>
           {emailExists !== null && (
             <Text style={styles.statusText}>
               {emailExists ? "Email đã tồn tại trong hệ thống" : "Đang tạo tài khoản mới..."}
             </Text>
-          )}
+          )} */}
         </View>
-      )} */}
+      )}
     </View>
   );
 };

@@ -15,12 +15,13 @@ const SettingsScreen = () => {
   const [user, setUser] = useState<User | null>(null);
   const fetchUserProfile = async () => {
     try {
-      const token = await AsyncStorage.getItem('userToken'); // Get token from storage
+      const driverId = await AsyncStorage.getItem('driverId');
+      const token = await AsyncStorage.getItem('userToken');
       if (!token) {
         throw new Error('No token found');
       }
       console.log('Token:', token); // Debugging log
-      const response = await fetch('http://10.0.2.2:3000/user/profile', { // Ensure HTTP protocol
+      const response = await fetch(`http://10.0.2.2:3000/user/profile/${driverId}`, { // Ensure HTTP protocol
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`, // Attach token to Authorization header

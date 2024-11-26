@@ -19,24 +19,40 @@ interface Order {
 
 const OrderScreen = () => {
   const [orders, setOrders] = useState<Order[]>([]);
-  const [loading, setLoading] = useState(true); // Loading state
-  const [acceptedOrdersCount, setAcceptedOrdersCount] = useState(0); // State to track the number of accepted orders
+  const [loading, setLoading] = useState(true); // Trạng thái loading
+  const [acceptedOrdersCount, setAcceptedOrdersCount] = useState(0); // Đếm số lượng đơn hàng đã nhận
+  const [driverId, setDriverId] = useState<string | null>(null); // Lưu driverId
+
+  // Lấy driverId từ AsyncStorage
+  useEffect(() => {
+    const fetchDriverId = async () => {
+      const storedDriverId = await AsyncStorage.getItem('driverId');
+      if (storedDriverId) {
+        setDriverId(storedDriverId);
+      } else {
+        showAlert('Lỗi', 'Không tìm thấy Driver ID');
+        setLoading(false);  // Set loading = false ngay khi không có driverId
+      }
+    };
+    fetchDriverId();
+  }, []);
+
+  const showAlert = (title: string, message: string) => {
+    Alert.alert(title, message);
+  };
 
   const fetchOrderOngoing = async () => {
     try {
-      // Get the auth token from AsyncStorage
       const token = await AsyncStorage.getItem('userToken');
       if (!token) {
-        // If no token is found, show an error message
-        Alert.alert('Error', 'No authentication token found');
+        showAlert('Lỗi', 'Không tìm thấy token xác thực');
         return;
       }
 
-      // Make the request to fetch orders, attaching the token in the Authorization header
-      const response = await fetch('http://10.0.2.2:3000/order/ongoing', {
+      const response = await fetch(`http://10.0.2.2:3000/order/ongoing/${driverId}`, {
         method: 'GET',
         headers: {
-          Authorization: `Bearer ${token}`, // Attach the token in the Authorization header
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
       });
@@ -44,115 +60,97 @@ const OrderScreen = () => {
       const data = await response.json();
 
       if (!response.ok) {
-        // Handle error response from the server
-        Alert.alert('Error', data.message || 'Failed to fetch orders');
+        showAlert('Lỗi', data.message || 'Lấy đơn hàng thất bại');
       } else {
-        // Set the fetched orders to state
         setOrders(data);
-        // Update the accepted orders count
         setAcceptedOrdersCount(data.filter((order: Order) => order.status === 'Accepted').length);
       }
     } catch (error) {
-      console.error('Error fetching ongoing orders:', error);
+      console.error('Lỗi khi lấy đơn hàng:', error);
+      showAlert('Lỗi', 'Không thể lấy danh sách đơn hàng');
     } finally {
-      // Set loading to false after fetching is complete
       setLoading(false);
     }
   };
 
   useFocusEffect(
     useCallback(() => {
-      // Refresh logic here
-      fetchOrderOngoing();
-      console.log('OrderScreen is focused');
-
-      return () => {
-        // Cleanup if needed
-      };
-    }, [])
+      if (driverId) {
+        fetchOrderOngoing();
+        console.log('Màn hình đơn hàng đã được focus');
+      }
+    }, [driverId]) // Cập nhật khi driverId thay đổi
   );
 
   const handleCompleteOrder = async (orderId: string) => {
     try {
-      // Get the auth token from AsyncStorage
       const token = await AsyncStorage.getItem('userToken');
-
       if (!token) {
-        // If no token is found, show an error message
-        Alert.alert('Error', 'No authentication token found');
+        showAlert('Lỗi', 'Không tìm thấy token xác thực');
         return;
       }
 
-      // Make the request to complete the order, attaching the token in the Authorization header
       const response = await fetch(`http://10.0.2.2:3000/order/complete/${orderId}`, {
         method: 'PUT',
         headers: {
-          Authorization: `Bearer ${token}`, // Attach the token in the Authorization header
+          Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ statusId: 'ST003' })
+        body: JSON.stringify({ statusId: 'ST003' }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        // Handle error response from the server
-        Alert.alert('Error', data.message || 'Failed to complete order');
+        showAlert('Lỗi', data.message || 'Hoàn thành đơn hàng thất bại');
       } else {
-        Alert.alert('Success', 'Order completed successfully');
-        // Re-fetch the orders after completing an order
-        fetchOrderOngoing();
+        showAlert('Thành công', 'Đơn hàng đã hoàn thành');
+        fetchOrderOngoing(); // Lấy lại danh sách đơn hàng sau khi hoàn thành
       }
     } catch (error) {
-      console.error('Error completing order:', error);
-      Alert.alert('Error', 'Failed to complete order');
+      console.error('Lỗi khi hoàn thành đơn hàng:', error);
+      showAlert('Lỗi', 'Hoàn thành đơn hàng thất bại');
     }
   };
 
   const handleDeclinedOrder = async (orderId: string) => {
     try {
-      // Get the auth token from AsyncStorage
       const token = await AsyncStorage.getItem('userToken');
-
       if (!token) {
-        // If no token is found, show an error message
-        Alert.alert('Error', 'No authentication token found');
+        showAlert('Lỗi', 'Không tìm thấy token xác thực');
         return;
       }
 
-      // Make the request to cancel the order, attaching the token in the Authorization header
       const response = await fetch(`http://10.0.2.2:3000/order/cancel/${orderId}`, {
         method: 'PUT',
         headers: {
-          Authorization: `Bearer ${token}`, // Attach the token in the Authorization header
+          Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ statusId: 'ST003' })
+        body: JSON.stringify({ statusId: 'ST003' }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        // Handle error response from the server
-        Alert.alert('Error', data.message || 'Failed to cancel order');
+        showAlert('Lỗi', data.message || 'Huỷ đơn hàng thất bại');
       } else {
-        Alert.alert('Success', 'Order cancelled successfully');
-        // Re-fetch the orders after declining an order
-        fetchOrderOngoing();
+        showAlert('Thành công', 'Đơn hàng đã bị huỷ');
+        fetchOrderOngoing(); // Lấy lại danh sách đơn hàng sau khi huỷ
       }
     } catch (error) {
-      console.error('Error cancelling order:', error);
-      Alert.alert('Error', 'Failed to cancel order');
+      console.error('Lỗi khi huỷ đơn hàng:', error);
+      showAlert('Lỗi', 'Huỷ đơn hàng thất bại');
     }
   };
 
   useEffect(() => {
     if (acceptedOrdersCount > 1) {
-      //Alert.alert('Warning', 'You have more than one accepted order');
-      fetchOrderOngoing(); // Refresh orders
+      // Cập nhật đơn hàng
+      fetchOrderOngoing();
     } else if (acceptedOrdersCount === 0) {
-      //Alert.alert('Warning', 'You have no accepted orders');
-      fetchOrderOngoing(); // Refresh orders
+      // Cập nhật đơn hàng nếu không có đơn nào
+      fetchOrderOngoing();
     }
   }, [acceptedOrdersCount]);
 
@@ -163,19 +161,16 @@ const OrderScreen = () => {
       </View>
 
       {loading ? (
-        // Show loading indicator while fetching orders
         <ActivityIndicator size="large" color="#0000ff" />
       ) : (
         <ScrollView>
           {orders.length > 0 ? (
-            // Display the orders using the AcceptOrderCard component
             <AcceptOrderCard
               orders={orders}
               onCompleteOrder={handleCompleteOrder}
               onDeclinedOrder={handleDeclinedOrder}
             />
           ) : (
-            // Show message if no orders are found
             <View className="items-center p-5">
               <Text className="text-lg">Không có đơn hàng nào.</Text>
             </View>

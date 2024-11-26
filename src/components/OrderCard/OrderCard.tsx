@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, Alert } from 'react-native';
 import { styled } from 'nativewind';
 import Divider from './Divider';
@@ -36,22 +36,37 @@ const StyledText = styled(Text);
 const StyledTouchableOpacity = styled(TouchableOpacity);
 
 const OrderCard: React.FC<OrderCardProps> = ({ order, onAcceptOrder }) => {
+  const [driverId, setDriverId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchDriverId = async () => {
+      const storedDriverId = await AsyncStorage.getItem('driverId');
+      setDriverId(storedDriverId);
+    };
+    fetchDriverId();
+  }, []);
+
   const handleAcceptOrder = async () => {
     try {
-      // Retrieve the token from AsyncStorage
+      // Retrieve the token and driverId from AsyncStorage
       const token = await AsyncStorage.getItem('userToken');
-      if (!token) {
-        throw new Error('No token found');
+      const storedDriverId = await AsyncStorage.getItem('driverId');
+
+      if (!token || !storedDriverId) {
+        throw new Error('Không tìm thấy token hoặc driverId');
       }
 
       // Send PUT request to accept the order
       const response = await fetch(`http://10.0.2.2:3000/order/accept/${order.orderId}`, {
         method: 'PUT',
         headers: {
-          'Authorization': `Bearer ${token}`,  // Include the token in the Authorization header
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ statusId: 'ST002' }), // Status for accepted orders
+        body: JSON.stringify({
+          statusId: 'ST002',  // Status for accepted orders
+          driverId: storedDriverId  // Gửi driverId từ AsyncStorage
+        }),
       });
 
       // Check if the response is not ok (non-2xx status)
@@ -69,7 +84,7 @@ const OrderCard: React.FC<OrderCardProps> = ({ order, onAcceptOrder }) => {
       }
 
       // Show success alert
-      Alert.alert('Success', 'Đã nhận đơn thành công');
+      Alert.alert('Thành công', 'Đã nhận đơn thành công');
 
       // Update the parent component state
       onAcceptOrder(order.orderId);  // This can be used to update the UI or remove the accepted order from the list
@@ -77,13 +92,13 @@ const OrderCard: React.FC<OrderCardProps> = ({ order, onAcceptOrder }) => {
     } catch (error) {
       if (error instanceof Error) {
         // Handle known errors such as missing token or response issues
-        Alert.alert('Error', error.message);
+        Alert.alert('Lỗi', error.message);
       } else if ((error as Error).message === 'Network request failed') {
         // Handle network errors
-        Alert.alert('Network Error', 'Could not connect to the server. Please check your internet connection.');
+        Alert.alert('Lỗi mạng', 'Không thể kết nối đến máy chủ. Vui lòng kiểm tra kết nối internet của bạn.');
       } else {
         // Catch-all for unexpected errors
-        Alert.alert('Error', 'An unexpected error occurred. Please try again later.');
+        Alert.alert('Lỗi', 'Đã xảy ra lỗi không mong muốn. Vui lòng thử lại sau.');
       }
     }
   };
@@ -95,7 +110,7 @@ const OrderCard: React.FC<OrderCardProps> = ({ order, onAcceptOrder }) => {
       <StyledText className="text-lg mb-1 mt-1">Người nhận: {order.receiverName || 'N/A'}</StyledText>
       <StyledText className="text-lg mb-1">SDT Người nhận: {order.receiverPhone || 'N/A'}</StyledText>
       <StyledText className="text-lg mb-1">Địa chỉ giao: {order.receiverAddress || 'N/A'}</StyledText>
-      <StyledText className="text-lg mb-1">Note: {order.orderNote || 'Không có ghi chú'}</StyledText>
+      <StyledText className="text-lg mb-1">Ghi chú: {order.orderNote || 'Không có ghi chú'}</StyledText>
       <StyledView className="flex-col justify-between items-center mt-2">
         <Divider />
         <StyledView className="flex-row justify-between w-full mt-2">

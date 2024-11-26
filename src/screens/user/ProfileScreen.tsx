@@ -1,57 +1,65 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, Image, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, Image, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import Logout from '../../svg/Logout';
 import Back from '../../svg/Back';
+import Pencil from '../../svg/Pencil';
 
 interface User {
   driverName: string;
   driverPhone: string;
-  driverLicenseType: string; // Updated to match the API response
-  vehiclePlate: string; // Updated to match the API response
-  driverLocation: string;
+  driverEmail: string;
+  driverGender: number;
+  driverVehicleBSX?: string;
+  driverAddress?: string;
+  driverAvatar?: string;
 }
 
-const UserProfile = () => {
+const UserProfile: React.FC = () => {
   const navigation = useNavigation();
-  const [user, setUser] = useState<User | null>(null); // State to hold user profile data
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSettings = () => {
-    navigation.navigate('SettingsScreen' as never);
-  }
+  const handleSettings = () => navigation.navigate('SettingsScreen' as never);
 
   const fetchUserProfile = async () => {
+    setLoading(true);
+
     try {
-      const token = await AsyncStorage.getItem('userToken'); // Get token from storage
-      if (!token) {
-        throw new Error('No token found');
+      const driverId = await AsyncStorage.getItem('driverId');
+      const token = await AsyncStorage.getItem('userToken');
+
+      if (!driverId || !token) {
+        setError('Missing driverId or token');
+        return;
       }
-      console.log('Token:', token); // Debugging log
-      const response = await fetch('http://10.0.2.2:3000/user/profile', { // Ensure HTTP protocol
+
+      const response = await fetch(`http://10.0.2.2:3000/user/profile/${driverId}`, {
         method: 'GET',
         headers: {
-          'Authorization': `Bearer ${token}`, // Attach token to Authorization header
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
       });
-      console.log('Response status:', response.status); // Debugging log
-      if (!response.ok) {
-        throw new Error('Failed to fetch user profile');
-      }
+
+      if (!response.ok) throw new Error('Failed to fetch user profile');
+
       const userProfile = await response.json();
-      setUser(userProfile); // Set the fetched user profile data directly
-      console.log('User profile fetched successfully', userProfile);
-    } catch (error) {
-      console.error('Error fetching user profile:', error);
+      setUser(userProfile);
+      AsyncStorage.setItem('driverId', userProfile.driverId);
+    } catch (error: any) {
+      setError(error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleLogout = async () => {
     try {
       await AsyncStorage.removeItem('userToken');
-      navigation.navigate('LoginScreen' as never);
-      console.log('Logout successful');
+      navigation.navigate('Auth', { screen: 'SSO' });
     } catch (error) {
       console.error('Error logging out:', error);
     }
@@ -67,17 +75,35 @@ const UserProfile = () => {
     }, [])
   );
 
+  if (loading) {
+    return (
+      <View className="flex-1 justify-center items-center">
+        <ActivityIndicator size="large" color="#EB455F" />
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View className="flex-1 justify-center items-center">
+        <Text className="text-red-500">{error}</Text>
+      </View>
+    );
+  }
+
   return (
     <View className="flex-1">
       <ScrollView className="bg-white flex-1">
-        <TouchableOpacity className="mt-12" onPress={handleSettings}>
-          <Back />
-        </TouchableOpacity>
-
-        <View className="items-center mt-8">
+        <View className="relative">
+          <TouchableOpacity className="absolute top-12 left-4 z-10" onPress={handleSettings}>
+            <Back />
+          </TouchableOpacity>
           <Image
-            source={{ uri: 'http://your_image_url_here.jpg' }} // Replace with actual image URL
-            className="w-40 h-40 rounded-full"
+            source={{
+              uri: user?.driverAvatar || 'https://www.strasys.uk/wp-content/uploads/2022/02/Depositphotos_484354208_S.jpg',
+            }}
+            style={{ width: '100%', height: 300 }}
+            resizeMode="cover"
           />
         </View>
 
@@ -85,29 +111,22 @@ const UserProfile = () => {
           {user?.driverName || 'User Name'}
         </Text>
 
-        <TouchableOpacity className="absolute top-24 right-5 p-3 bg-[#EB455F] rounded-full">
-          <Text className="text-white">✎</Text>
+        <TouchableOpacity className="absolute top-24 right-5 w-10 h-10 bg-[#EB455F] rounded-full items-center justify-center">
+          <Pencil width={16} height={16} color="white" />
         </TouchableOpacity>
 
         <View className="mt-6 px-6">
-          <View className="mb-4">
-            <Text className="text-gray-500">Số điện thoại</Text>
-            <Text className="text-xl mt-2">{user?.driverPhone || 'N/A'}</Text>
-          </View>
-
-          <View className="mb-4">
-            <Text className="text-gray-500">Biển số xe</Text>
-            <Text className="text-xl mt-2">{user?.vehiclePlate || 'N/A'}</Text>
-          </View>
-
-          <View className="mb-4">
-            <Text className="text-gray-500">Địa chỉ</Text>
-            <Text className="text-xl mt-2">{user?.driverLocation || 'N/A'}</Text>
-          </View>
+          <ProfileDetail label="Số điện thoại" value={user?.driverPhone} />
+          <ProfileDetail label="Biển số xe" value={user?.driverVehicleBSX} />
+          <ProfileDetail label="Địa chỉ" value={user?.driverAddress} />
         </View>
       </ScrollView>
+
       <View className="px-6 mb-6">
-        <TouchableOpacity className="bg-[#EB455F] p-4 rounded-[10px] justify-center items-center flex-row" onPress={handleLogout}>
+        <TouchableOpacity
+          className="bg-[#EB455F] p-4 rounded-[10px] justify-center items-center flex-row"
+          onPress={handleLogout}
+        >
           <View className="items-start mr-2">
             <Logout />
           </View>
@@ -117,5 +136,12 @@ const UserProfile = () => {
     </View>
   );
 };
+
+const ProfileDetail: React.FC<{ label: string; value?: string }> = ({ label, value }) => (
+  <View className="mb-4">
+    <Text className="text-gray-500">{label}</Text>
+    <Text className="text-xl mt-2">{value || 'N/A'}</Text>
+  </View>
+);
 
 export default UserProfile;

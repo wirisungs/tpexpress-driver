@@ -17,7 +17,7 @@ const FingerprintButton = () => {
         promptMessage: "Xác thực bằng vân tay",
       });
       if (result.success) {
-        navigation.navigate("HomeScreen" as never);
+        navigation.navigate("Home" as never);
       } else {
         ToastAndroid.show("Đăng nhập thất bại", ToastAndroid.SHORT);
       }
