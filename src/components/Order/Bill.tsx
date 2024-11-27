@@ -31,7 +31,7 @@ const Bill: React.FC<SenderOrderProps> = () => {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          `http://tpexpress-driver.ddns.net:3000/api/item/get-item?status=${item.orderId}`
+          `http://10.0.2.2:3000/api/item/get-item?status=${item.orderId}`
         );
         const messagesData: Item[] = await response.json();
         setItemDetail(messagesData);
@@ -46,7 +46,7 @@ const Bill: React.FC<SenderOrderProps> = () => {
   // const handleUpdate = async () => {
   //   try {
   //     const response = await fetch(
-  //       `http://tpexpress-driver.ddns.net:3000/api/order/${item.orderId}`,
+  //       `http://10.0.2.2:3000/api/order/${item.orderId}`,
   //       {
   //         method: 'PUT',
   //         headers: {

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, Image, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, Image, TouchableOpacity, ScrollView, ActivityIndicator, ALert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import Logout from '../../svg/Logout';
@@ -58,10 +58,36 @@ const UserProfile: React.FC = () => {
 
   const handleLogout = async () => {
     try {
+      const driverId = await AsyncStorage.getItem('driverId');
+      const token = await AsyncStorage.getItem('userToken');
+
+      if (!driverId || !token) {
+        throw new Error('Driver ID hoặc token không tồn tại');
+      }
+
+      // Gọi API để cập nhật trạng thái về false
+      const response = await fetch(`http://10.0.2.2:3000/driver/toggle-status/${driverId}`, {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Lỗi khi cập nhật trạng thái');
+      }
+
+      console.log('Trạng thái đã được cập nhật về false.');
+
+      // Xóa token và chuyển hướng đến màn hình đăng nhập
       await AsyncStorage.removeItem('userToken');
       navigation.navigate('Auth', { screen: 'SSO' });
+
     } catch (error) {
-      console.error('Error logging out:', error);
+      console.error('Error during logout:', error instanceof Error ? error.message : error);
+      Alert.alert('Lỗi', 'Không thể đăng xuất. Vui lòng thử lại sau.');
     }
   };
 

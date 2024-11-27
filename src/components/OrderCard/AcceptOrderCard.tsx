@@ -33,7 +33,7 @@ interface Order {
 interface AcceptOrderCardProps {
   orders: Order[];
   onCompleteOrder: (code: string) => void;
-  onDeclinedOrder: (code: string) => void;
+  onDeclinedOrder: (code: string, reasonFailed: string) => void;
 }
 
 const StyledView = styled(View);

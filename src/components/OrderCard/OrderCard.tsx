@@ -48,7 +48,7 @@ const OrderCard: React.FC<OrderCardProps> = ({ order, onAcceptOrder }) => {
 
   const handleAcceptOrder = async () => {
     try {
-      // Retrieve the token and driverId from AsyncStorage
+      // Lấy token và driverId từ AsyncStorage
       const token = await AsyncStorage.getItem('userToken');
       const storedDriverId = await AsyncStorage.getItem('driverId');
 
@@ -56,7 +56,7 @@ const OrderCard: React.FC<OrderCardProps> = ({ order, onAcceptOrder }) => {
         throw new Error('Không tìm thấy token hoặc driverId');
       }
 
-      // Send PUT request to accept the order
+      // Gửi yêu cầu PUT để nhận đơn hàng
       const response = await fetch(`http://10.0.2.2:3000/order/accept/${order.orderId}`, {
         method: 'PUT',
         headers: {
@@ -64,40 +64,39 @@ const OrderCard: React.FC<OrderCardProps> = ({ order, onAcceptOrder }) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          statusId: 'ST002',  // Status for accepted orders
-          driverId: storedDriverId  // Gửi driverId từ AsyncStorage
+          statusId: 'ST002', // Trạng thái đơn đã nhận
+          driverId: storedDriverId,
         }),
       });
 
-      // Check if the response is not ok (non-2xx status)
+      const responseText = await response.text();
+      let data;
+
+      try {
+        data = JSON.parse(responseText);
+      } catch (parseError) {
+        console.error('Lỗi phân tích JSON:', parseError, 'Phản hồi từ server:', responseText);
+        throw new Error('Phản hồi từ hệ thống không hợp lệ');
+      }
+
       if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.message || 'Lỗi nhận đơn từ hệ thống');
+        if (data.error === 'Tài xế đã nhận đủ 10 đơn trong ngày') {
+          Alert.alert('Thông báo', 'Bạn đã nhận đủ 10 đơn trong ngày, không thể nhận thêm.');
+        } else {
+          Alert.alert('Lỗi', data.message || `Lỗi ${response.status}: ${response.statusText}`);
+        }
+        return;
       }
 
-      // Parse the response data
-      const data = await response.json();
-
-      // Handle any backend-specific errors, such as validation errors
-      if (data && data.error) {
-        throw new Error(data.error || 'Lỗi không xác định');
-      }
-
-      // Show success alert
+      // Hiển thị thông báo thành công
       Alert.alert('Thành công', 'Đã nhận đơn thành công');
 
-      // Update the parent component state
-      onAcceptOrder(order.orderId);  // This can be used to update the UI or remove the accepted order from the list
-
+      // Cập nhật giao diện hoặc trạng thái cha
+      onAcceptOrder(order.orderId);
     } catch (error) {
       if (error instanceof Error) {
-        // Handle known errors such as missing token or response issues
         Alert.alert('Lỗi', error.message);
-      } else if ((error as Error).message === 'Network request failed') {
-        // Handle network errors
-        Alert.alert('Lỗi mạng', 'Không thể kết nối đến máy chủ. Vui lòng kiểm tra kết nối internet của bạn.');
       } else {
-        // Catch-all for unexpected errors
         Alert.alert('Lỗi', 'Đã xảy ra lỗi không mong muốn. Vui lòng thử lại sau.');
       }
     }

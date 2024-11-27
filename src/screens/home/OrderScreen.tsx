@@ -19,11 +19,11 @@ interface Order {
 
 const OrderScreen = () => {
   const [orders, setOrders] = useState<Order[]>([]);
-  const [loading, setLoading] = useState(true); // Trạng thái loading
-  const [acceptedOrdersCount, setAcceptedOrdersCount] = useState(0); // Đếm số lượng đơn hàng đã nhận
-  const [driverId, setDriverId] = useState<string | null>(null); // Lưu driverId
+  const [loading, setLoading] = useState(true); // Loading state
+  const [acceptedOrdersCount, setAcceptedOrdersCount] = useState(0); // Count accepted orders
+  const [driverId, setDriverId] = useState<string | null>(null); // Store driverId
 
-  // Lấy driverId từ AsyncStorage
+  // Fetch driverId from AsyncStorage
   useEffect(() => {
     const fetchDriverId = async () => {
       const storedDriverId = await AsyncStorage.getItem('driverId');
@@ -31,7 +31,7 @@ const OrderScreen = () => {
         setDriverId(storedDriverId);
       } else {
         showAlert('Lỗi', 'Không tìm thấy Driver ID');
-        setLoading(false);  // Set loading = false ngay khi không có driverId
+        setLoading(false);  // Set loading to false if no driverId
       }
     };
     fetchDriverId();
@@ -41,7 +41,10 @@ const OrderScreen = () => {
     Alert.alert(title, message);
   };
 
+  // Fetch ongoing orders for the driver
   const fetchOrderOngoing = async () => {
+    if (!driverId) return;
+
     try {
       const token = await AsyncStorage.getItem('userToken');
       if (!token) {
@@ -62,7 +65,8 @@ const OrderScreen = () => {
       if (!response.ok) {
         showAlert('Lỗi', data.message || 'Lấy đơn hàng thất bại');
       } else {
-        setOrders(data);
+        // Update orders with only ongoing ones
+        setOrders(data.filter((order: Order) => order.status !== 'ST003')); // Exclude completed or canceled orders
         setAcceptedOrdersCount(data.filter((order: Order) => order.status === 'Accepted').length);
       }
     } catch (error) {
@@ -79,9 +83,10 @@ const OrderScreen = () => {
         fetchOrderOngoing();
         console.log('Màn hình đơn hàng đã được focus');
       }
-    }, [driverId]) // Cập nhật khi driverId thay đổi
+    }, [driverId]) // Re-fetch orders when driverId changes
   );
 
+  // Complete the order (mark as completed)
   const handleCompleteOrder = async (orderId: string) => {
     try {
       const token = await AsyncStorage.getItem('userToken');
@@ -96,7 +101,7 @@ const OrderScreen = () => {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ statusId: 'ST003' }),
+        body: JSON.stringify({ statusId: 'ST003' }), // Set status to completed (ST003)
       });
 
       const data = await response.json();
@@ -105,7 +110,8 @@ const OrderScreen = () => {
         showAlert('Lỗi', data.message || 'Hoàn thành đơn hàng thất bại');
       } else {
         showAlert('Thành công', 'Đơn hàng đã hoàn thành');
-        fetchOrderOngoing(); // Lấy lại danh sách đơn hàng sau khi hoàn thành
+        // Update orders state after completing the order
+        setOrders((prevOrders) => prevOrders.filter((order) => order.orderId !== orderId));
       }
     } catch (error) {
       console.error('Lỗi khi hoàn thành đơn hàng:', error);
@@ -113,7 +119,8 @@ const OrderScreen = () => {
     }
   };
 
-  const handleDeclinedOrder = async (orderId: string) => {
+  // Decline the order (mark as cancelled with a reason)
+  const handleDeclinedOrder = async (orderId: string, reasonFailed: string) => {
     try {
       const token = await AsyncStorage.getItem('userToken');
       if (!token) {
@@ -127,7 +134,10 @@ const OrderScreen = () => {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ statusId: 'ST003' }),
+        body: JSON.stringify({
+          statusId: 'ST003', // Set status to cancelled (ST003)
+          reasonFailed: reasonFailed, // Pass the reason for cancellation
+        }),
       });
 
       const data = await response.json();
@@ -136,7 +146,8 @@ const OrderScreen = () => {
         showAlert('Lỗi', data.message || 'Huỷ đơn hàng thất bại');
       } else {
         showAlert('Thành công', 'Đơn hàng đã bị huỷ');
-        fetchOrderOngoing(); // Lấy lại danh sách đơn hàng sau khi huỷ
+        // Update orders state after cancelling the order
+        setOrders((prevOrders) => prevOrders.filter((order) => order.orderId !== orderId));
       }
     } catch (error) {
       console.error('Lỗi khi huỷ đơn hàng:', error);
@@ -145,13 +156,8 @@ const OrderScreen = () => {
   };
 
   useEffect(() => {
-    if (acceptedOrdersCount > 1) {
-      // Cập nhật đơn hàng
-      fetchOrderOngoing();
-    } else if (acceptedOrdersCount === 0) {
-      // Cập nhật đơn hàng nếu không có đơn nào
-      fetchOrderOngoing();
-    }
+    // Fetch orders when the count of accepted orders changes
+    fetchOrderOngoing();
   }, [acceptedOrdersCount]);
 
   return (

@@ -1,29 +1,11 @@
-import { View, Text, Switch, ScrollView, Alert, Image } from 'react-native';
-import React, { useState, useEffect, useCallback } from 'react';
-import { useFocusEffect } from '@react-navigation/native';
-import OrderCard from '../../components/OrderCard/OrderCard';
+import { View, Text, Switch, ScrollView, Alert, AppState } from 'react-native';
+import React, { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import OrderCard from '../../components/OrderCard/OrderCard';
 
 interface Order {
   orderId: string;
-  cusId?: string;
-  senderAddress?: string;
-  receiverPhone?: string;
-  receiverName?: string;
-  receiverAddress?: string;
-  orderType?: string;
-  orderIsFragile?: boolean;
-  orderNote?: string | null;
-  orderCOD?: number;
-  dservicesId?: string;
-  totalPrice?: number;
-  paymentId?: string | null;
-  orderStatusId?: string;
-  driverId?: string | null;
-  createdDate?: Date;
-  deliverPrice?: number;
-  proofSuccess?: string | null;
-  reasonFailed?: string | null;
+  // ... other order properties
 }
 
 const HomeScreen = () => {
@@ -35,42 +17,74 @@ const HomeScreen = () => {
   useEffect(() => {
     const fetchDriverId = async () => {
       const storedDriverId = await AsyncStorage.getItem('driverId');
-      setDriverId(storedDriverId);
+      if (storedDriverId) {
+        setDriverId(storedDriverId);
+      } else {
+        console.error('Driver ID not found in AsyncStorage');
+      }
     };
     fetchDriverId();
+
+    // Listen to app state changes
+    const subscription = AppState.addEventListener('change', handleAppStateChange);
+    return () => subscription.remove();
   }, []);
+
+  const handleAppStateChange = async (nextAppState: string) => {
+    if (nextAppState === 'background' || nextAppState === 'inactive') {
+      await updateDriverStatus(false); // Set status to false when app goes to background
+    }
+  };
 
   // Toggle driver status
   const toggleDriverStatus = async () => {
     if (!driverId) return;
 
+    const newStatus = !isWorking;
+    console.log('Toggling status, new status:', newStatus);  // Thêm log để kiểm tra trạng thái mới
+
+    setIsWorking(newStatus);
+    await updateDriverStatus(newStatus);
+    if (newStatus) fetchOrders(); // Re-fetch orders when turning on
+  };
+
+  // Update driver status in backend
+  const updateDriverStatus = async (status: boolean) => {
     try {
+      if (!driverId) {
+        console.error('Driver ID is missing');
+        return;
+      }
+
       const token = await AsyncStorage.getItem('userToken');
+      if (!token) {
+        console.error('User token not found');
+        return;
+      }
+
       const response = await fetch(`http://10.0.2.2:3000/driver/toggle-status/${driverId}`, {
         method: 'PUT',
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
+        body: JSON.stringify({ status }),  // Gửi status từ client
       });
 
-      const text = await response.text();
-      console.log('Response text:', text);
+      const data = await response.json();
+      console.log('Driver status response:', data);
 
       if (response.ok) {
-        const data = JSON.parse(text);
         console.log(`Driver status updated: ${data.message}`);
-        setIsWorking(data.driverStatus); // Update the status based on response
-        fetchOrders(); // Re-fetch orders when status changes
       } else {
-        console.error('Failed to update driver status:', text);
+        console.error('Failed to update driver status:', data.message);
       }
     } catch (error) {
-      console.error('Error toggling driver status:', error);
+      console.error('Error updating driver status:', error);
     }
   };
 
-  // Fetch orders from the back-end
+  // Fetch orders
   const fetchOrders = async () => {
     try {
       const token = await AsyncStorage.getItem('userToken');
@@ -81,36 +95,30 @@ const HomeScreen = () => {
 
       const response = await fetch('http://10.0.2.2:3000/order/pending', {
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error('Failed to fetch orders:', errorData);
-        throw new Error(`Error fetching orders: ${errorData.message || 'Unknown error'}`);
+      if (response.ok) {
+        const data = await response.json();
+        setOrders(data);
+      } else {
+        console.error('Failed to fetch orders:', await response.text());
       }
-
-      const data = await response.json();
-      setOrders(data); // Update the state with fetched orders
     } catch (error) {
-      console.error('Error fetching orders:', error instanceof Error ? error.message : error);
+      console.error('Error fetching orders:', error);
     }
   };
 
-  // useFocusEffect to refresh orders when the screen is focused
-  useFocusEffect(
-    useCallback(() => {
-      if (isWorking) {
-        fetchOrders();
-      }
-    }, [isWorking])
-  );
+  // Handle order acceptance
+  const handleOrderAcceptance = (orderId: string) => {
+    setOrders((prevOrders) => prevOrders.filter((order) => order.orderId !== orderId));
+    // Alert.alert('Success', `Order ${orderId} accepted`);
+  };
 
   // Handle toggle state change
   const handleToggleChange = () => {
-    setIsWorking((prev) => !prev);
     toggleDriverStatus();
   };
 
@@ -119,14 +127,14 @@ const HomeScreen = () => {
       <View className="flex-col mb-4 items-start">
         <Text className="text-base font-bold mr-2">Trạng thái hoạt động</Text>
         <Switch
-          trackColor={{ false: "#767577", true: "#81b0ff" }}
-          thumbColor={isWorking ? "#f5dd4b" : "#f4f3f4"}
+          trackColor={{ false: '#767577', true: '#81b0ff' }}
+          thumbColor={isWorking ? '#f5dd4b' : '#f4f3f4'}
           ios_backgroundColor="#3e3e3e"
           onValueChange={handleToggleChange}
           value={isWorking}
         />
         <Text className="text-sm" style={{ color: isWorking ? 'green' : 'red' }}>
-          {isWorking ? "Đang hoạt động" : "Không hoạt động"}
+          {isWorking ? 'Đang hoạt động' : 'Không hoạt động'}
         </Text>
       </View>
 
@@ -134,7 +142,7 @@ const HomeScreen = () => {
         {isWorking ? (
           orders.length > 0 ? (
             orders.map((order) => (
-              <OrderCard key={order.orderId} order={order} onAcceptOrder={(id) => console.log(`Order accepted: ${id}`)} />
+              <OrderCard key={order.orderId} order={order} onAcceptOrder={handleOrderAcceptance} />
             ))
           ) : (
             <Text>Không có đơn hàng</Text>
@@ -142,7 +150,6 @@ const HomeScreen = () => {
         ) : (
           <View className="flex-col items-center">
             <Text className="text-center p-7 text-xl">Chuyển đổi trạng thái hoạt động để xem đơn hàng</Text>
-            {/* <Image source={ActivityState} style={{ width: 300, height: 300 }} /> */}
           </View>
         )}
       </ScrollView>
