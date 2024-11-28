@@ -47,60 +47,60 @@ const OrderCard: React.FC<OrderCardProps> = ({ order, onAcceptOrder }) => {
   }, []);
 
   const handleAcceptOrder = async () => {
-    try {
-      // Lấy token và driverId từ AsyncStorage
-      const token = await AsyncStorage.getItem('userToken');
-      const storedDriverId = await AsyncStorage.getItem('driverId');
+  try {
+    // Lấy token và driverId từ AsyncStorage
+    const token = await AsyncStorage.getItem('userToken');
+    const storedDriverId = await AsyncStorage.getItem('driverId');
 
-      if (!token || !storedDriverId) {
-        throw new Error('Không tìm thấy token hoặc driverId');
-      }
-
-      // Gửi yêu cầu PUT để nhận đơn hàng
-      const response = await fetch(`http://10.0.2.2:3000/order/accept/${order.orderId}`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          statusId: 'ST002', // Trạng thái đơn đã nhận
-          driverId: storedDriverId,
-        }),
-      });
-
-      const responseText = await response.text();
-      let data;
-
-      try {
-        data = JSON.parse(responseText);
-      } catch (parseError) {
-        console.error('Lỗi phân tích JSON:', parseError, 'Phản hồi từ server:', responseText);
-        throw new Error('Phản hồi từ hệ thống không hợp lệ');
-      }
-
-      if (!response.ok) {
-        if (data.error === 'Tài xế đã nhận đủ 10 đơn trong ngày') {
-          Alert.alert('Thông báo', 'Bạn đã nhận đủ 10 đơn trong ngày, không thể nhận thêm.');
-        } else {
-          Alert.alert('Lỗi', data.message || `Lỗi ${response.status}: ${response.statusText}`);
-        }
-        return;
-      }
-
-      // Hiển thị thông báo thành công
-      Alert.alert('Thành công', 'Đã nhận đơn thành công');
-
-      // Cập nhật giao diện hoặc trạng thái cha
-      onAcceptOrder(order.orderId);
-    } catch (error) {
-      if (error instanceof Error) {
-        Alert.alert('Lỗi', error.message);
-      } else {
-        Alert.alert('Lỗi', 'Đã xảy ra lỗi không mong muốn. Vui lòng thử lại sau.');
-      }
+    if (!token || !storedDriverId) {
+      throw new Error('Không tìm thấy token hoặc driverId');
     }
-  };
+
+    // Gửi yêu cầu PUT để nhận đơn hàng
+    const response = await fetch(`http://10.0.2.2:3000/order/accept/${order.orderId}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        statusId: 'ST002', // Trạng thái đơn đã nhận
+        driverId: storedDriverId,
+      }),
+    });
+
+    const responseText = await response.text();
+    let data;
+
+    try {
+      data = JSON.parse(responseText);
+    } catch (parseError) {
+      console.error('Lỗi phân tích JSON:', parseError, 'Phản hồi từ server:', responseText);
+      throw new Error('Phản hồi từ hệ thống không hợp lệ');
+    }
+
+    if (!response.ok) {
+      if (data.error === 'Tài xế đã nhận đủ 10 đơn trong ngày') {
+        Alert.alert('Thông báo', 'Bạn đã nhận đủ 10 đơn trong ngày, không thể nhận thêm.');
+      } else {
+        Alert.alert('Lỗi', data.message || `Lỗi ${response.status}: ${response.statusText}`);
+      }
+      return;
+    }
+
+    // Hiển thị thông báo thành công
+    Alert.alert('Thành công', 'Đã nhận đơn thành công');
+
+    // Cập nhật giao diện hoặc trạng thái cha
+    onAcceptOrder(order.orderId);
+  } catch (error) {
+    if (error instanceof Error) {
+      Alert.alert('Lỗi', error.message);
+    } else {
+      Alert.alert('Lỗi', 'Đã xảy ra lỗi không mong muốn. Vui lòng thử lại sau.');
+    }
+  }
+};
 
   return (
     <StyledView className="bg-white rounded-lg p-4 my-2 mx-3 shadow-xl">
